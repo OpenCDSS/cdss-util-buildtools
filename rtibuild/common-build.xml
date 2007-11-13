@@ -1,0 +1,170 @@
+<!-- 
+================================================================================
+Common build example - new product layout
+================================================================================
+11-21-06 iws
+
+================================================================================
+-->
+
+<project name="rti-common-build" default="fail">
+    
+    <import file="common.xml"/>
+    <import file="common-nb.xml"/>
+    <import file="common-installer.xml"/>  
+    
+    <target name="-pre-compile-java"/>
+    
+    <target name="compile-java-no-deps" description="Compile java but set nodeps flag for products with dependencies" depends="-init">
+        <property name="nodeps" value="true"/>
+        <antcall inheritall="true" target="compile-java"/>
+    </target>
+    
+    <target name="-compile-deps" if="product.deps" unless="nodeps">
+        <echo level="verbose">compiling deps for ${product.name} : ${product.deps}</echo>
+        <taskdef name="collectem" classpath="${rtibuild.dir}/project/dist/rtibuild_1_0.jar" classname="rti.build.ant.CollectProductDependencies"/>
+        <collectem separator=","/>
+        <deps target="compile-java" products="${collected.product.deps}"/>
+    </target>
+    
+    <target name="-compile-java" depends="-init,-pre-compile-java,-init-javac,-compile-deps" >
+        <javacompile src="${src.dir}" dest="${build.dir}" cp="${build.classpath}"/>
+    </target>
+    
+    <target name="compile-java" description="Generic target for compiling java source code" depends="-init,-pre-compile-java,-init-javac,-compile-deps,-compile-java,-emma,-check-tests,-compile-tests" >
+        <echo level="verbose">compiling ${product.name}</echo>
+        <copy todir="${build.dir}">
+            <fileset dir="${src.dir}" includes="${jar.includes}" excludes="${default.jar.excludes}" />
+        </copy>
+        <condition property="no.graphics">
+            <not><available file="graphics"/></not>
+        </condition>
+        <antcall target="-copy-graphics"/>
+    </target>
+    
+    <target name="-copy-graphics" unless="no.graphics">
+        <copy todir="${build.dir}">
+            <fileset dir="${graphics.dir}" includes="**/*"/>
+        </copy>
+    </target>
+    
+    <target name="build-all" depends="real-clean,compile-java"/>
+    
+    <target name="javadoc" description="Target for creating Javadocs" depends="-init,-init-java">
+        <mkdir dir="${jdoc.dir}"/>
+        <javadoc destdir="${jdoc.dir}">
+            <classpath>
+                <path path="${build.classpath}" />
+            </classpath>
+            <packageset dir="${src.dir}" includes="rti/**,RTi/**"/>
+        </javadoc>
+    </target>
+    
+    <target name="clean" description="Clean class files and jar file" depends="-init">
+        <delete dir="${build.dir}" quiet="true" />
+        <delete file="${dist.dir}/${jar.name}" quiet="true" />
+        <delete dir="test/bin" quiet="true" />
+    </target>
+    
+    <target name="clean-deps" depends="-init,clean" if="product.deps" description="clean dependencies">
+        <taskdef name="collectem" classpath="${rtibuild.dir}/project/dist/rtibuild_1_0.jar" classname="rti.build.ant.CollectProductDependencies"/>
+        <collectem separator=","/>
+        <deps target="clean" products="${collected.product.deps}"/>
+    </target>
+    
+    <target name="-clean-tests">
+        <delete dir="test/bin" quiet="true" />
+    </target>
+    
+    <target name="real-clean" description="Clean class files, jars, docs, etc." depends="-init">
+        <delete dir="${build.dir}" quiet="true" />
+        <delete dir="${jdoc.dir}" quiet="true" />
+        <delete dir="${dist.dir}" quiet="true" />
+        <delete dir="test/bin" quiet="true" />
+    </target>
+    
+    <target name="test" description="Run all tests" depends="-init,-enable-emma">
+        <ant antfile="${test.dir}/build.xml" target="all-tests" />
+    </target>
+    
+    <target name="test-product" description="Run test project" depends="-enable-emma,compile-java,-check-tests" if="tests.exist">
+        <ant antfile="${test.dir}/build.xml" target="all-tests"/>
+    </target>
+    
+    <target name="-check-tests">
+        <available file="${test.dir}/build.xml" property="tests.exist"/>
+    </target>
+    
+    <target name="test-deps" description="Test all dependencies" depends="-init">
+        <taskdef name="collectem" classpath="${rtibuild.dir}/project/dist/rtibuild_1_0.jar" classname="rti.build.ant.CollectProductDependencies"/>
+        <collectem separator=","/>
+        <deps target="test-product" products="${collected.product.deps}"/>
+    </target>
+    
+    <target name="-compile-tests" description="foo" depends="-check-tests" if="tests.exist">
+        <ant antfile="${test.dir}/build.xml" target="build-all-tests"/>
+    </target>
+    
+    <target name="run" description="Run java.main.class as defined in product" depends="-init-deps,-init-java">
+        <requireprop name="java.main.class" />
+        <property name="java.main.vmargs" value=""/>
+        <property name="java.main.cwd" value="${basedir}"/>
+        <runjava main="${java.main.class}" cp="${run.classpath.computed}" args="${java.main.args}" dir="${java.main.cwd}">
+            <vmargs><jvmarg value="${java.main.vmargs}"/></vmargs>
+        </runjava>
+    </target>
+    
+    <target name="onejar" description="Create single jar from all deps" depends="-init-deps,compile-java">
+        <deps target="jar" products="${product.deps}"/>
+        <taskdef name="collectjars" classpath="${rtibuild.dir}/project/dist/rtibuild_1_0.jar" classname="rti.build.ant.CollectJarDependencies"/>
+        <collectjars separator=","/>
+        <dojar jar="${jar.name}">
+            <zipfiles>
+                <zipgroupfileset dir=".." includes="${collected.jar.deps}"/>
+            </zipfiles>
+        </dojar>
+    </target>
+    
+    <target name="jar" description="Create product jar from name and version" depends="compile-java">
+        <dojar jar="${jar.name}" />
+    </target>
+    
+    <target name="jar-deps" description="Create product jar from name and version" depends="-init">
+        <deps target="jar" products="${product.deps}"/>
+    </target>
+    
+    <target name="pre-release" description="Complete clean,build, and test" depends="clean-deps,-compile-deps,test-deps,test-product"/>
+    
+    <target name="release" description="Perform complete clean, build, test and package" depends="pre-release" />
+    
+    <target name="dist" description="Perform any distribution related activities" depends="jar" />
+    
+    <target name="installer" description="Create an installer for this product" depends="-pre-installer,jar,-post-installer">
+        <property name="nsis.file" value="${product.name}.nsi"/>
+        <echo>${product.deps}</echo>
+        <deps target="jar" products="${product.deps}"/>
+        <nsisinstaller nsi="${nsis.file}"/>
+    </target>
+    
+    <target name="-pre-installer"/>
+    <target name="-post-installer"/>
+    
+    <target name="-enable-emma">
+        <property name="emma.enabled" value="true" />
+        <property name="coverage.dir" location="test/coverage"/>
+        <mkdir dir="${coverage.dir}"/>
+        <property name="emma.filter" value="rti.*, RTi.*" />
+    </target>
+    
+    <target name="-emma">
+        <emma enabled="${emma.enabled}" >
+            <instr instrpath="${build.dir}"
+                   destdir="${coverage.dir}/instr"
+                   metadatafile="${coverage.dir}/metadata.emma"
+                   merge="true">
+                       <filter includes="${emma.filter}"/>
+                       </instr>
+        </emma>
+    </target>
+    
+</project>

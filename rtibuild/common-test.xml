@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="rti-common-test" default="fail">
+    
+    <import file="common.xml"/>
+    
+    <target name="-init-tests" depends="-init-deps">
+        <dirname property="test.dir" file="${ant.file}"/>
+        <property file="${test.dir}/test-user.properties"/>
+        <property file="${test.dir}/test.properties"/>
+        <property name="junit.jar" value="s:/DEVELOP/junit/junit3.8.1/junit.jar"/>
+        <available property="unit.exists" file="${test.dir}/unit/src"/>
+        <available property="operational.exists" file="${test.dir}/operational/src"/>
+        <available property="regression.exists" file="${test.dir}/regression/src"/>
+        <property name="test.classpath.computed" value="${test.classpath}:${collected.jar.deps}"/>
+    </target> 
+    
+    <target name="fail">
+        <fail message="do not call directly"/>
+    </target>
+    
+    <target name="all-tests" depends="-init-tests" description="run all tests">
+        <runtests type="" dir="test"/>
+    </target>
+    
+    <target name="unit-test" description="run unit tests" depends="-init-tests,-unit-test-suite,-unit-tests"/>
+    <target name="regression-test" description="run regression tests" depends="-init-tests,-regression-test-suite,-regression-tests"/>
+    <target name="operational-test" description="run operational tests" depends="-init-tests,-operational-test-suite,-operational-tests"/>
+    
+    <target name="-unit-test-suite"  if="unit.test.suite" depends="-init-tests">
+        <runsuite type="unit"/>
+    </target>
+    
+    <target name="-regression-test-suite"  if="regression.test.suite" depends="-init-tests">
+        <runsuite type="regression"/>
+    </target>
+    
+    <target name="-operational-test-suite"  if="operational.test.suite" depends="-init-tests">
+        <runsuite type="operational"/>
+    </target>
+    
+    <target name="-unit-tests"  if="unit.exists" depends="-init-tests">
+        <runtests type="unit"/>
+    </target>
+    
+    <target name="-regression-tests"  if="regression.exists" depends="-init-tests">
+        <runtests type="regression"/>
+    </target>
+    
+    <target name="-operational-tests" if="operational.exists" depends="-init-tests">
+        <runtests type="operational"/>
+    </target>
+    
+    <target name="build-all-tests" depends="-init-tests">
+        <build-tests type=""/>
+    </target>
+    
+    <target name="-debug-test-single" depends="-init-tests">
+        <javacompile src="${test.dir}/${test.type}/src" 
+                     dest="${test.dir}/bin/${test.type}" 
+                     cp="${test.classpath}:${build.classpath}"
+                     fork="false"/>
+        <pathconvert property="test.classes" pathsep=",">
+            <chainedmapper>
+                <flattenmapper/>
+                <mapper type="regexp" from="(.*)\.java" to="**/\1\.class"/> 
+            </chainedmapper> 
+            <path>
+                <filelist dir="${test.dir}/${test.type}/src" files="${files}"/>
+            </path>
+        </pathconvert>
+        <pathconvert property="src.paths">
+            <chainedmapper>
+                <flattenmapper/>
+                <globmapper from="*" to="../*/src"/>
+            </chainedmapper>
+            <path>
+                <filelist dir=".." files="${product.deps}"/>
+            </path>
+        </pathconvert>
+        <nbjpdastart name="${classname}" addressproperty="jpda.address" transport="dt_socket">
+            <classpath path="${test.classpath}"/>
+            <sourcepath path="${src.paths}:test/${test.type}/src"/>
+        </nbjpdastart>
+        <runtests type="${test.type}" include="${test.classes}">
+            <vmargs>
+                <jvmarg value="-Xdebug"/>
+                <jvmarg value="-Xnoagent"/>
+                <jvmarg value="-Djava.compiler=none"/>
+                <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+            </vmargs>
+        </runtests>
+    </target>
+    
+    <target name="-test-single" depends="-init-tests">
+        <javacompile src="${test.dir}/${test.type}/src" 
+                     dest="${test.build.dir}/${test.type}" 
+                     cp="${test.classpath}:${build.classpath}"
+                     fork="false"/>
+        <pathconvert property="test.classes" pathsep=",">
+            <chainedmapper>
+                <flattenmapper/>
+                <mapper type="regexp" from="(.*)\.java" to="**/\1\.class"/> 
+            </chainedmapper> 
+            <path>
+                <filelist dir="${test.dir}/${test.type}/src" files="${files}"/>
+            </path>
+        </pathconvert>
+        <echo>RUNTESTS : ${test.classes}</echo>
+        <runtests type="${test.type}" include="${test.classes}"/>
+    </target>
+    
+    <macrodef name="build-tests">
+        <attribute name="type"/>
+        <attribute name="src" default="${test.dir}/@{type}/src"/>
+        <attribute name="build" default="${test.build.dir}/@{type}"/>
+        <attribute name="cp" default="${test.classpath.computed}" />
+        <sequential>
+            <echo >Compiling tests with classpath : @{cp}</echo>
+            <javacompile src="@{src}" dest="@{build}" cp="@{cp}" useant="true"/>
+            <copy todir="@{build}">
+                <fileset dir="@{src}" includes="${jar.includes}" excludes="${default.jar.excludes}" />
+            </copy>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="runsuite">
+        <attribute name="type"/>
+        <attribute name="cp" default="$test.classpath.computed}"/>
+        <sequential>
+            <fail unless="@{type}.test.suite" message="@{type}.test.suite not defined"/>
+            <javacompile src="${test.dir}/@{type}/src" dest="${test.build.dir}/@{type}" cp="${junit.jar}:@{cp}" useant="true"/>
+            <testsuite suite="${@{type}.test.suite}" out="test/@{type}/results" cp="@{cp}:${test.build.dir}" dir="${test.dir}/.."/>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="runtests">
+        <attribute name="type"/>
+        <attribute name="src" default="${test.dir}/@{type}/src"/>
+        <attribute name="out" default="${test.dir}/@{type}/results"/>
+        <attribute name="build" default="${test.build.dir}/@{type}"/>
+        <attribute name="dir" default="${test.dir}/"/>
+        <attribute name="cp.extra" default=""/>
+        <attribute name="cp" default="@{cp.extra}:${test.classpath.computed}" />
+        <attribute name="include" default="**/*Test.class"/>
+        <attribute name="exclude" default="**/*Suite*.class"/>
+        <attribute name="haltOnFail" default="false"/>
+        <element name="vmargs" optional="true"/>
+        <sequential>
+            <mkdir dir="@{out}"/>
+            <build-tests type="@{type}" src="@{src}" build="@{build}" cp="@{cp}"/>
+            <!-- @todo junit is run in the test directory, while everything else is
+            using project root for reference -->
+            <junit printsummary="withOutAndErr" fork="yes" forkmode="once"
+                   dir="@{dir}" haltonfailure="@{haltOnFail}" filtertrace="off" showoutput="yes"> 
+                <jvmarg value="-Demma.coverage.out.file=${coverage.dir}/coverage.emma"/>
+                <jvmarg value="-Demma.coverage.out.merge=true"/>
+                <jvmarg value="-Demma.verbosity.level=trace1"/>
+                <jvmarg value="-Dcom.sun.management.jmxremote"/>
+                <jvmarg value="-Xmx256m"/>
+                <vmargs/>
+                <assertions/>        
+                <formatter usefile="false" type="brief"/>
+                <formatter type="xml"/>
+                <classpath>
+                    <!-- add instrumented classes first -->
+                    <path path="${coverage.dir}/instr"/>
+                    <path path="@{cp}:@{build}"/>
+                    <path refid="emma.libs"/>
+                </classpath>
+                <batchtest todir="@{out}">
+                    <fileset dir="@{build}" 
+                             includes="@{include} ${@{type}.test.include}" 
+                             excludes="@{exclude} ${@{type}.test.exclude}">
+                    </fileset>
+                </batchtest>
+            </junit>
+            <emma enabled="${emma.enabled}" >
+                <report sourcepath="${src.dir}" depth="method" >
+                    <fileset dir="${coverage.dir}" >
+                        <include name="*.emma" />
+                    </fileset>
+                    <html outfile="${coverage.dir}/coverage.html" />
+                </report>
+            </emma>
+        </sequential>
+    </macrodef>
+    
+</project>

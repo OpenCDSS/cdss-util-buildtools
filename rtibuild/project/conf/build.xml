@@ -1,0 +1,16 @@
+<project name="rtibuild" default="jar" basedir="../">
+    
+    <import file="../../common-build.xml"/>
+    
+    <property name="rtibuild.present" value="true"/>
+    
+    <target name="jar" depends="compile-java-no-deps" description="create reload agent">
+        <dojar jar="${jar.name}">
+            <atts>
+                <attribute name="Premain-Class" value="rti.agent.ReloadAgent"/>
+                <attribute name="Can-Redefine-Classes" value="true"/>
+            </atts>
+        </dojar>
+    </target>
+    
+</project>

@@ -1,0 +1,181 @@
+<!-- general targets to leverage for products that build 
+     product testers
+     
+     Author: kat
+     Date: 2007-02-22
+-->
+
+<project name="product-tester" >
+
+<property name="ProductTester" 	 value="${ext.dir}/ProductTester" />
+<property name="tmp.dir"		location="tmp" />
+	
+<!--builds a product tester to run on windows -->
+<target name="buildProdTesterWindows" >
+	<buildProductTesterWindows dataset="${reg_dataset}" />
+</target>
+
+<!--builds a product tester to run on windows -->
+<target name="buildProdTesterLinux" >
+	<buildProductTesterWindows dataset="${reg_dataset}" />
+</target>
+
+<target name="addTestsToSet" >
+	<regTestSetup dataset="${reg_dataset}" />
+</target>
+
+<!--==================================================
+	Macro for building product test sets for Windows.
+	Must be called with dataset attribute set to the
+	name of the data wanting to be packaged.
+===================================================-->
+<macrodef name="buildProductTesterWindows" >
+	
+	<attribute name="dataset" />
+	
+	<sequential>
+		<regTestSetup dataset="@{dataset}" />
+		
+		<!-- extract the ProductTester into temp -->
+		<unzip src="${ProductTester}/ProductTester.zip"
+				dest="${tmp.dir}"/>
+		<!-- replace text in .ini files -->
+		<replace file="${tmp.dir}/ProductTester.ini" 
+			token="product" value="${proj_name}"/>
+		<replace file="${tmp.dir}/ProductTester.ini" 
+			token="program" value="${proj_name}.exe"/>
+		<replace file="${tmp.dir}/ProductTester.ini" 
+			token="type" value="command"/>
+		<replace file="${tmp.dir}/ProductTester.ini" 
+				token="automate=true" value="automate=false"/>
+		<zip destfile="${dist.dir}/${proj_name}ProductTester.zip" >
+			<fileset dir="${tmp.dir}" />
+		</zip>
+		
+		<delete dir="${tmp.dir}" />
+	</sequential>
+	
+</macrodef>
+	
+<!-- build product test set with data -->
+<macrodef name="buildProductTesterLinux" >
+	
+	<attribute name="dataset" />
+	<sequential>
+		<regTestSetup dataset="@{dataset}" />
+		<!-- extract the ProductTester into temp -->
+		<gunzip src="${ProductTester}/ProductTester.tar.gz" />
+		<untar src="${ProductTester}/ProductTester.tar" 
+			dest="${tmp.dir}"/>
+		
+		<replace file="${tmp.dir}/ProductTester.ini" 
+			token="product" value="${proj_name}"/>
+		<replace file="${tmp.dir}/ProductTester.ini" 
+			token="program" value="${proj_name}.exe"/>
+		<replace file="${tmp.dir}/ProductTester.ini" 
+			token="type" value="command"/>
+		<replace file="${tmp.dir}/ProductTester.ini" 
+			token="automate=true" value="automate=false"/>
+		
+		<tar destfile="${tmp.dir}/${proj_name}ProductTester.tar" >
+			<tarfileset dir="${tmp.dir}"/>
+		</tar>
+		
+		<gzip src="${tmp.dir}/${proj_name}ProductTester.tar" 
+			destfile="${dist.dir}/${proj_name}ProductTester.tar.gz"/>
+		
+		<delete dir="${tmp.dir}" />
+	</sequential>
+		
+</macrodef>
+
+
+<!-- macro for calling all regTest targets -->
+<macrodef name="regTestGeneric" >
+	
+	<attribute name="dir" />
+	<attribute name="projFile" />
+	<sequential>
+		<mkdir dir="tmp" />
+		<!-- create NativeJ EXE file -->
+		<exec executable="${nativejc}" 
+			dir="@{dir}" >
+			<arg value="@{projFile}"/>
+		</exec>
+		
+		<!-- extract the ProductTester into temp -->
+		<unzip src="${ProductTester}/ProductTester.zip"
+				dest="${tmp.dir}"/>
+		
+		<!-- replace text in .ini files -->
+		<replace file="${tmp.dir}/ProductTester.ini" 
+			token="product" value="${proj_name}"/>
+		<replace file="${tmp.dir}/ProductTester.ini" 
+			token="program" 
+			value="@{dir}/${proj_name}_Regression.exe"/>
+		<replace file="${tmp.dir}/ProductTester.ini" 
+			token="type" value="command"/>
+		
+		<!-- run the program --> 
+		<exec dir="${tmp.dir}" 
+			executable="${tmp.dir}/ProductTester.exe" >
+		</exec>
+		
+		<delete file="@{dir}/${proj_name}_Regression.exe" />
+		
+		<antcall target="regTestCleanup" />
+	</sequential>
+			
+</macrodef>
+	
+<!--=================================================
+	Target: regTestCleanup
+	Function: delete ${tmp.dir} folder where regression
+	   	      tests ran and move results to regression
+	   	      results directory.
+==================================================-->
+<target name="regTestCleanup" >
+
+	<move todir="${regTest.dir}/results" >
+		<fileset dir="${tmp.dir}/tests" />
+		<fileset dir="${tmp.dir}" includes="**/*.log" />
+	</move>
+	
+	<delete dir="${tmp.dir}" />
+	
+</target>
+
+	
+<!--=================================================
+	Target: regTest
+	Function: to regression test this product.  Runs 
+	          TSTool using a commands file and sends
+	          the output to the Regression results
+	          folder.   
+===================================================-->
+<target name="regTest" >
+	
+	<regTestSetup dataset="${reg_dataset}" />
+	
+	<regTestGeneric dir="${reg_install.dir}"
+	 projFile="${reg_proj_file}" />
+		
+</target>
+	
+
+<!-- product test set initialization -->
+<macrodef name="regTestSetup"  >
+	
+	<attribute name="dataset"/>
+	<sequential>
+		<mkdir dir="${tmp.dir}" />
+		<mkdir dir="${tmp.dir}/tests" />
+		<copy todir="${tmp.dir}/tests" >
+			<fileset dir="${regTest.dir}/commands/@{dataset}"
+			excludes="**/.svn"/>
+		</copy>
+	</sequential>
+
+</macrodef>	
+
+</project>

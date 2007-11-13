@@ -1,0 +1,42 @@
+#!/bin/sh
+
+# Get the class name of a .java file
+function classname {
+  n=$1;n=${n#./};n=${n//\//.};echo ${n%.java}
+}
+
+# find project root
+PHOME="$(dirname "$0")/.."
+
+if [ $# -eq 0 ]; then
+  echo "usage: run [class] [args]"
+  echo "available classes:"
+  for i in $(cd $PHOME/src; grep -l -r --include \*.java "public static void main" ./); do 
+    classname $i
+  done;
+  exit 0
+fi
+
+#portable classpath
+case "`uname`" in
+  CYGWIN*) cygwin=true
+esac
+if [ $cygwin ]; then
+  CP="@cygpath@"
+else
+  CP="@run.classpath.computed@"
+fi
+
+java="${java-"@java.exe@"}"
+while [ $# -gt 0 ] ; do
+  case "$1" in
+    -jdkhome|--jdkhome) shift; if [ $# -gt 0 ] ; then jdkhome=$1; fi
+     ;;
+    -J*) jopt=`expr "X-$1" : 'X--J\(.*\)'`; jargs="$jargs \"$jopt\""
+     ;;
+    *) args="$args \"$1\"" ;;
+  esac
+  shift
+done
+
+eval \"$java\" $jargs -classpath \"$CP\" $args

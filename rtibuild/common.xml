@@ -1,0 +1,259 @@
+<project name="rti-common" default="fail">
+    
+    <target name="fail">
+        <fail message="Do not call this build directly" />
+    </target>      
+    
+    <target name="bootstrap" description="build the rtibuild dependencies">
+        <ant inheritall="false" dir="${ant.file.rti-common}/../project" antfile="conf/build.xml" target="jar"/>
+    </target>
+    
+    <path id="emma.libs" >
+        <pathelement location="${ant.file.rti-common}/../lib/emma.jar" />
+        <pathelement location="${ant.file.rti-common}/../lib/emma_ant.jar" />
+    </path>
+    <taskdef resource="emma_ant.properties" classpathref="emma.libs" />
+    
+    <target name="-init" depends="-init-props"/>
+    
+    <!--Properties that common build uses
+        generate-with: grep -o '${[a-z.]*}' common-build.xml | tr -d '${}' | sort | uniq
+	-->
+        
+    <target name="-init-props">
+        <!-- Product specific details should never go into the user properties,
+             it should only be used to specify jdk or other common tool/library
+             paths
+        -->
+        <property file="${user.home}/.rtibuild.properties"/>
+        <property file="conf/product-user.properties" />
+        <property file="conf/product.properties" />
+        
+        <!-- required from product -->
+        <requireprop name="product.name" />
+        <requireprop name="product.version" />
+        
+        <!-- hard coded defaults - if defined in the above files, they
+             will be overridden -->
+        <property name="product.disabled.jars" value=""/>
+        <property name="fork.javac" value="false"/>
+        <property name="jdoc.includes" value="**/*.java" />
+        <property name="jdoc.excludes" value="docs/javadoc" />
+        <property name="java.src.version" value="1.4" />
+        <property name="java.target.version" value="1.4" />
+        <property name="javac.includes" value="**/*.java" />
+        <property name="javac.excludes" value="" />
+        <property name="ext.dir" value="externals" />
+        <property name="src.dir" value="src" />
+        <property name="graphics.dir" value="graphics" />
+        <property name="installer.dir" value="installer" />
+        <property name="test.dir" value="test" />
+        <property name="build.dir" value="bin" />
+        <property name="test.build.dir" value="${test.dir}/bin" />
+        <property name="dist.dir" value="dist" />
+        <property name="jdoc.dir" value="doc/javadoc" />
+        <property name="nsis.dir" value="installer"/>
+        <property name="nsis.exe" value="S:\DEVELOP\NSIS\makensis.exe"/>
+        <property name="jdoc.includes" value="**/*.java" />
+        <property name="jdoc.excludes" value="" />
+        <property name="logs.dir" value="test/logs" />
+        <property name="javac.debug" value="true" />
+        <property name="jar.extra.includes" value="" />
+        <property name="default.jar.excludes" value="**/*.svn,${jar.excludes}" />
+        <property name="jdk.base.dir" value="s:/DEVELOP/" />
+        <property name="java.142.name" value="jdk_142" />
+        <property name="java.150.name" value="jdk_150" />
+        
+        <!-- computed properties-->
+        <property name="jar.includes" value="**/*.png,**/*.gif,**/*.jpg,**/*.class/,**/*.properties,META-INF/**/*,${jar.extra.includes}" />
+        <property name="jar.name" value="${product.name}_${product.version}.jar" />
+        <property name="jar.file" value="${dist.dir}/${jar.name}"/>
+        <dirname property="rtibuild.dir" file="${ant.file.rti-common-build}"/>
+        
+        <property name="run.classpath" value=""/>
+        
+        <path id="rti.buildtools.path" path="${rtibuild.dir}/project/dist/rtibuild_1_0.jar"/>
+        <taskdef name="collectjars" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectJarDependencies" onerror="ignore"/>
+        <taskdef name="collectproducts" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectJarDependencies" onerror="ignore"/>
+    </target>
+    
+    <target name="-init-deps" depends="bootstrap,-init">
+        <available property="rtibuild.present" file="${rtibuild.dir}/project/dist/rtibuild_1_0.jar"/>
+        <fail unless="rtibuild.present" message="Please run the bootstrap target to build rtibuild ant extensions"/>
+        <available property="rtibuild.present" file="${rtibuild.dir}/project/dist/rtibuild_1_0.jar"/>
+        <fail unless="rtibuild.present" message="Please run the bootstrap target to build rtibuild ant extensions"/>
+        <echo level="verbose">Disabled jars : ${product.disabled.jars}</echo>
+        <collectjars useBuildDirs="true" excludes="${product.disabled.jars}"/>
+        <property name="run.classpath.computed" value="${build.dir}:${collected.jar.deps}"/>
+        <path id="collected.deps.path"/>
+    </target>
+    
+    <target name="-init-javac" depends="-init">
+        <condition property="jdk.build.home" value="${jdk.base.dir}/${java.142.name}">
+            <equals arg1="${java.src.version}" arg2="1.4" />
+        </condition>
+        <condition property="jdk.build.home" value="${jdk.base.dir}/${java.150.name}">
+            <equals arg1="${java.src.version}" arg2="1.5" />
+        </condition>
+        
+        <property name="javac.exe" value="${jdk.build.home}/bin/javac" />
+    </target>
+    
+    <target name="-init-java" depends="-init">
+        <condition property="jdk.run.home" value="${jdk.base.dir}/${java.142.name}">
+            <equals arg1="${java.src.version}" arg2="1.4" />
+        </condition>
+        <condition property="jdk.run.home" value="${jdk.base.dir}/${java.150.name}">
+            <equals arg1="${java.src.version}" arg2="1.5" />
+        </condition>
+        <property name="java.exe" value="${jdk.run.home}/bin/java" />
+    </target>
+    
+    <macrodef name="requireprop">
+        <attribute name="name" />
+        <sequential>
+            <fail unless="@{name}" message="product must define property @{name}" />
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="testsuite">
+        <attribute name="suite" description="the java suite to run" />
+        <attribute name="out" />
+        <attribute name="dir" default="${user.dir}"/>
+        <attribute name="cp" default="${build.classpath}:${test.classpath}" />
+        <sequential>
+            <mkdir dir="@{out}" />
+            <junit printsummary="yes" fork="yes" dir="@{dir}" haltonfailure="true">
+                <assertions />
+                <formatter type="xml" />
+                <classpath>
+                    <path path="@{cp}" />
+                </classpath>
+                <test name="@{suite}" outfile="@{out}" />
+            </junit>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="dojar">
+        <attribute name="jar" />
+        <attribute name="dist.dir" default="${dist.dir}" />
+        <attribute name="dir" default="${build.dir}" />
+        <attribute name="includes" default="${jar.includes}" />
+        <attribute name="excludes" default="${default.jar.excludes}" />
+        <attribute name="compress" default="false" />
+        <attribute name="mainClass" default="${java.main.class}"/>
+        <element name="zipfiles" optional="true"/>
+        <element name="atts" optional="true"/>
+        <sequential>
+            <tstamp />
+            <mkdir dir="@{dist.dir}" />
+            <jar destfile="@{dist.dir}/@{jar}" excludes="@{excludes}" compress="@{compress}">
+                <manifest>
+                    <attribute name="Main-Class" value="@{mainClass}"/>
+                    <attribute name="Built-By" value="${user.name}" />
+                    <attribute name="Specification-Title" value="${product.name}" />
+                    <attribute name="Specification-Version" value="${product.version}" />
+                    <attribute name="Specification-Vendor" value="Riverside Technology Inc." />
+                    <attribute name="Implementation-Version" value="${version} ${TSTAMP}" />
+                    <atts/>
+                </manifest>
+                <fileset dir="@{dir}" includes="@{includes}" excludes="@{excludes}"/>
+                <zipfiles/>
+            </jar>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="aptcompile">
+        <attribute name="includes" default="${javac.includes}" />
+        <attribute name="excludes" default="${javac.excludes}" />
+        <attribute name="src" />
+        <attribute name="source" default="${java.src.version}" />
+        <attribute name="target" default="${java.target.version}" />
+        <attribute name="dest" />
+        <attribute name="debug" default="true" />
+        <attribute name="deprecation" default="on" />
+        <attribute name="useant" default="no" />
+        <attribute name="cp" />
+        <attribute name="factory"/>
+        <attribute name="factorycp" default="rti.buildtools.path"/>
+        <sequential>
+            <mkdir dir="@{dest}" />
+            <apt srcdir="@{src}" source="@{source}" target="@{target}" 
+                 includes="@{includes}" excludes="@{excludes}" 
+                 destdir="@{dest}" debug="@{debug}" deprecation="@{deprecation}" 
+                 includeAntRuntime="@{useant}" 
+                 failonerror="true" factory="@{factory}" factorypathref="@{factorycp}">
+                <classpath>
+                    <path path="@{cp}" />
+                </classpath>
+            </apt>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="javacompile">
+        <attribute name="includes" default="${javac.includes}" />
+        <attribute name="excludes" default="${javac.excludes}" />
+        <attribute name="src" />
+        <attribute name="source" default="${java.src.version}" />
+        <attribute name="target" default="${java.target.version}" />
+        <attribute name="dest" />
+        <attribute name="fork" default="${fork.javac}" />
+        <attribute name="debug" default="true" />
+        <attribute name="deprecation" default="on" />
+        <attribute name="executable" default="${javac.exe}" />
+        <attribute name="useant" default="no" />
+        <attribute name="cp" />
+        <sequential>
+            <mkdir dir="@{dest}" />
+            <javac srcdir="@{src}" source="@{source}" target="@{target}" 
+                   includes="@{includes}" excludes="@{excludes}" 
+                   destdir="@{dest}" debug="@{debug}" deprecation="@{deprecation}" 
+                   executable="@{executable}" includeAntRuntime="@{useant}" 
+                   fork="@{fork}" failonerror="true">
+                <classpath>
+                    <path path="@{cp}" />
+                </classpath>
+            </javac>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="runjava">
+        <attribute name="main" />
+        <attribute name="cp" />
+        <attribute name="dir" default="${basedir}"/>
+        <attribute name="args" default="" />
+        <element name="vmargs" optional="true"/>
+        <sequential>
+            <echo>@{cp} @{main}</echo>
+            <java classname="@{main}" fork="true" jvm="${java.exe}" dir="@{dir}">
+                <jvmarg line="-Xmx256m"/>
+                <jvmarg line="-ea"/>
+                <classpath>
+                    <path path="@{cp}" />
+                </classpath>
+                <vmargs/>
+                <arg line="@{args}" />
+            </java>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="deps" description="build dependencies">
+        <attribute name="target" />
+        <attribute name="products"/>
+        <attribute name="inheritall" default="false"/>
+        <attribute name="inheritrefs" default="false"/>
+        <attribute name="deps" default="nodeps"/>
+        <element name="inherited" optional="true"/>
+        <sequential>
+            <echo>calling @{target} in deps @{products}</echo>
+            <subant target="@{target}" antfile="conf/build.xml" inheritall="@{inheritall}" inheritrefs="@{inheritrefs}">
+                <property name="@{deps}" value="@{deps}"/>
+                <!-- hack for netbeans projects -->
+                <property name="platform.home" value="${jdk.build.home}"/>
+                <inherited/>
+                <filelist dir="." files="@{products}"/>
+            </subant>
+        </sequential>
+    </macrodef>
+    
+</project>

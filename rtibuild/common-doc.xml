@@ -1,0 +1,27 @@
+<project name="common-doc">
+
+<target name="mergePDF" description="Merges multiple PDF files into one" >
+
+	<!-- depends on the following variables being set 
+		 proj_name - The projects (product) name
+		 filelist - File that contains the list and ordering
+		            of files to be merged.
+	-->
+
+	<exec executable="S:/DEVELOP/A-PDF Merger Command Line/bin/PMCMD.exe" >
+		<arg value="dist/${proj_name}.pdf" />
+		<!-- List of files to merge -->
+		<arg value="-F${filelist}" />
+		<!-- Create Bookmarks -->
+		<arg value="-B" />
+		<!-- insert page numbers -->
+		<arg value="-NSTYLE=[0]" />
+		<!-- Create Table of Contents -->
+		<arg value="-TLEVEL=1,LEVELSIZE1=10,LEVELCOLOR1=993333,TEMPLATE=S:/DEVELOP/A-PDF Merger Command Line/bin/Table_of_Contents.pdf,TOP=2,PAGE=3" />
+		<!-- Opens the document with bookmark pane visible -->
+		<arg value="-VOPENSHOW=bookmark" />
+	</exec>
+
+</target>
+
+</project>

@@ -1,0 +1,138 @@
+<!--=============================================
+	General build file for creating installer
+	packages and building executables.  Windows
+	installers and executables are created using
+	NSIS and NativeJ.  Linux installers are created
+	using InstallJammer and scripts are used to
+	execute the program.
+	
+	DATE: 2007-03-06
+	AUTHOR: kat
+==============================================-->
+
+<project name="common-install" >
+
+	<property name="nativejc"		 
+	   value="${ext.dir}/NativeJ/nativejc.exe" />
+	<property name="nsis.exe" value="S:\DEVELOP\NSIS\makensis.exe" />
+	
+	<condition property="installJammer" value="${ext.dir}/InstallJammer/installjammer">
+		<and>
+			<os family="unix" />
+		</and>
+	</condition>
+	<condition property="installJammer" value="${ext.dir}/InstallJammer/installjammer.exe">
+		<and>
+	       	<os family="windows" />
+		</and>
+	</condition>
+	
+
+<!-- creates application executable using NativeJ project file -->
+<target name="createAppExe" 
+ description="creates executables using NativeJ" >
+
+	<exec executable="${nativejc}" 
+		dir="${NJProj.dir}" >
+		<arg value="${NJProj}"/>
+	</exec>
+	
+</target>
+
+<!-- creates an NSIS installer setup.exe file -->
+<target name="createNSISInstaller"
+ description="Runs NSIS to create a setup.exe installation file" >
+
+	<exec dir="${NJProj.dir}" 
+		executable="${nsis.exe}" >
+		<arg value="${nsis.script}" />
+	</exec>
+
+</target>
+
+<!-- helper method to build NJ and NSIS -->
+<target name="createNJandNSIS" 
+ description="Creates NJ application executable and
+	          NSIS setup.exe file" >
+	
+	<antcall target="createAppExe" />
+	<antcall target="createNSISInstaller" />
+	
+</target>
+	
+<!-- Linux installer targets  -->
+<target name="createLinuxInstaller" 
+ description="creates a Linux installer using Install Jammer">
+	
+	<!-- depends on two properties 
+		 ${type} = CDSS, RTi, etc
+		 ${mpi.file} = fullpath to mpi file (install jammer file)
+	-->
+	<antcall target="createInstallJammerInstaller" />
+	<antcall target="cleanupLinuxInstall" />
+	
+	<copy todir="installer/${type}" >
+		<fileset dir="installer/${type}/output" includes="**/${proj_name}*" />
+	</copy>
+	
+	<delete includeEmptyDirs="true" >
+		<fileset dir="installer/${type}/output" />
+		<fileset dir="installer/${type}/build" />
+	</delete>
+	
+	<delete file="installer/${type}/build.log" />
+	
+</target>
+	
+<target name="createLinuxInstallerCDSS" depends="copyBaseComponents"
+	description="creates Linux installer using CDSS like config" >
+	
+	<antcall target="createLinuxInstaller" />
+	
+</target>
+	
+	
+<target name="copyBaseComponents"
+ description="Copies base components for install packaging">
+	
+	<mkdir dir="tmp" />
+	<mkdir dir="tmp/logs" />
+	<mkdir dir="tmp/system" />
+	<mkdir dir="tmp/bin" />
+	
+	<!-- copy all files and folders for install package -->
+	<copy todir="tmp/system" >
+		<fileset dir="test/operational/${type}/system" excludes="**/.svn" />
+	</copy>
+	<copy todir="tmp/bin" >
+		<fileset dir="${ext.dir}/HydroBaseDMI" includes="**/*.jar" />
+		<fileset dir="${ext.dir}/Microsoft_SQL_Server_Java_ODBC_Driver" 
+			includes="**/*.jar" />
+		<fileset dir="${ext.dir}/RTi_Common" includes="**/*.jar" />
+		<fileset dir="${ext.dir}/SatmonSysDMI" includes="**/*.jar" />
+		<fileset dir="${ext.dir}/TS_Services" includes="**/*.jar" />
+		<fileset dir="${ext.dir}" includes="**/Blowfish_142.jar" />
+		<fileset dir="${ext.dir}/shellcon" includes="**/shellcon.exe" />
+	</copy>
+	
+</target>
+	
+<target name="createInstallJammerInstaller" 
+ description="Creates a Linux installer using InstallJammer" >
+	
+	<exec dir="${ext.dir}/InstallJammer" executable="${installJammer}" >
+	  <arg line="--build"/>
+	  <arg line="${mpi.file}" />
+	</exec>
+	
+</target>
+	
+<target name="cleanupLinuxInstall" 
+ description="Cleans up after an install has been built" >
+
+	<delete dir="tmp" />
+
+</target>
+	
+	
+</project>
