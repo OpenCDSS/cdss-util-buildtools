@@ -19,7 +19,7 @@
     </target>
     
     <target name="all-tests" depends="-init-tests" description="run all tests">
-        <runtests type="" dir="test"/>
+        <runtests type="" dir="${test.dir}"/>
     </target>
     
     <target name="unit-test" description="run unit tests" depends="-init-tests,-unit-test-suite,-unit-tests"/>

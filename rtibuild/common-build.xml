@@ -63,7 +63,7 @@ Common build example - new product layout
     <target name="clean" description="Clean class files and jar file" depends="-init">
         <delete dir="${build.dir}" quiet="true" />
         <delete file="${dist.dir}/${jar.name}" quiet="true" />
-        <delete dir="test/bin" quiet="true" />
+        <delete dir="${test.build.dir}" quiet="true" />
     </target>
     
     <target name="clean-deps" depends="-init,clean" if="product.deps" description="clean dependencies">
@@ -73,21 +73,21 @@ Common build example - new product layout
     </target>
     
     <target name="-clean-tests">
-        <delete dir="test/bin" quiet="true" />
+        <delete dir="${test.build.dir}" quiet="true" />
     </target>
     
     <target name="real-clean" description="Clean class files, jars, docs, etc." depends="-init">
         <delete dir="${build.dir}" quiet="true" />
         <delete dir="${jdoc.dir}" quiet="true" />
         <delete dir="${dist.dir}" quiet="true" />
-        <delete dir="test/bin" quiet="true" />
+        <delete dir="${test.build.dir}" quiet="true" />
     </target>
     
     <target name="test" description="Run all tests" depends="-init,-enable-emma">
         <ant antfile="${test.dir}/build.xml" target="all-tests" />
     </target>
     
-    <target name="test-product" description="Run test project" depends="-enable-emma,compile-java,-check-tests" if="tests.exist">
+    <target name="test-product" description="Run test project" depends="-init,-enable-emma,compile-java,-check-tests" if="tests.exist">
         <ant antfile="${test.dir}/build.xml" target="all-tests"/>
     </target>
     
@@ -151,7 +151,7 @@ Common build example - new product layout
     
     <target name="-enable-emma">
         <property name="emma.enabled" value="true" />
-        <property name="coverage.dir" location="test/coverage"/>
+        <property name="coverage.dir" location="${test.build.dir}/coverage"/>
         <mkdir dir="${coverage.dir}"/>
         <property name="emma.filter" value="rti.*, RTi.*" />
     </target>
