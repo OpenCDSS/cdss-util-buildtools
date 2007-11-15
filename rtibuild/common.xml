@@ -5,7 +5,7 @@
     </target>      
     
     <target name="bootstrap" description="build the rtibuild dependencies">
-        <ant inheritall="false" dir="${ant.file.rti-common}/../project" antfile="conf/build.xml" target="jar"/>
+        <ant inheritall="false" dir="${ant.file.rti-common}/.." antfile="conf/build.xml" target="jar"/>
     </target>
     
     <path id="emma.libs">
@@ -72,15 +72,15 @@
         
         <property name="run.classpath" value=""/>
         
-        <path id="rti.buildtools.path" path="${rtibuild.dir}/project/dist/rtibuild_1_0.jar"/>
+        <path id="rti.buildtools.path" path="${rtibuild.dir}/dist/rtibuild_1_0.jar"/>
         <taskdef name="collectjars" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectJarDependencies" onerror="ignore"/>
-        <taskdef name="collectproducts" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectJarDependencies" onerror="ignore"/>
+        <taskdef name="collectproducts" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectProductDependencies" onerror="ignore"/>
     </target>
     
     <target name="-init-deps" depends="bootstrap,-init">
-        <available property="rtibuild.present" file="${rtibuild.dir}/project/dist/rtibuild_1_0.jar"/>
+        <available property="rtibuild.present" file="${rtibuild.dir}/dist/rtibuild_1_0.jar"/>
         <fail unless="rtibuild.present" message="Please run the bootstrap target to build rtibuild ant extensions"/>
-        <available property="rtibuild.present" file="${rtibuild.dir}/project/dist/rtibuild_1_0.jar"/>
+        <available property="rtibuild.present" file="${rtibuild.dir}/dist/rtibuild_1_0.jar"/>
         <fail unless="rtibuild.present" message="Please run the bootstrap target to build rtibuild ant extensions"/>
         <echo level="verbose">Disabled jars : ${product.disabled.jars}</echo>
         <collectjars useBuildDirs="true" excludes="${product.disabled.jars}"/>
@@ -159,7 +159,7 @@
                     <attribute name="Specification-Title" value="${product.name}" />
                     <attribute name="Specification-Version" value="${product.version}" />
                     <attribute name="Specification-Vendor" value="Riverside Technology Inc." />
-                    <attribute name="Implementation-Version" value="${version} ${TSTAMP}" />
+                    <attribute name="Implementation-Version" value="${product.version} ${TSTAMP}" />
                     <atts/>
                 </manifest>
                 <fileset dir="@{dir}" includes="@{includes}" excludes="@{excludes}"/>
