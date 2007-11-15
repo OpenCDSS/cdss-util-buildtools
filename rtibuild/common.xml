@@ -1,6 +1,6 @@
-<project name="rti-common" default="fail">
+<project name="rti-common" default="-fail">
     
-    <target name="fail">
+    <target name="-fail">
         <fail message="Do not call this build directly" />
     </target>      
     
@@ -8,7 +8,7 @@
         <ant inheritall="false" dir="${ant.file.rti-common}/../project" antfile="conf/build.xml" target="jar"/>
     </target>
     
-    <path id="emma.libs" >
+    <path id="emma.libs">
         <pathelement location="${ant.file.rti-common}/../lib/emma.jar" />
         <pathelement location="${ant.file.rti-common}/../lib/emma_ant.jar" />
     </path>
@@ -36,31 +36,31 @@
         
         <!-- hard coded defaults - if defined in the above files, they
              will be overridden -->
-        <property name="product.disabled.jars" value=""/>
-        <property name="fork.javac" value="false"/>
-        <property name="jdoc.includes" value="**/*.java" />
-        <property name="jdoc.excludes" value="docs/javadoc" />
-        <property name="java.src.version" value="1.4" />
-        <property name="java.target.version" value="1.4" />
-        <property name="javac.includes" value="**/*.java" />
-        <property name="javac.excludes" value="" />
-        <property name="ext.dir" value="externals" />
-        <property name="src.dir" value="src" />
-        <property name="graphics.dir" value="graphics" />
-        <property name="installer.dir" value="installer" />
-        <property name="test.dir" value="../${product.dir.name}.test" />
-        <property name="build.dir" value="../${product.dir.name}/bin" />
-        <property name="test.build.dir" value="${test.dir}/bin" />
-        <property name="dist.dir" value="dist" />
-        <property name="jdoc.dir" value="doc/javadoc" />
-        <property name="nsis.dir" value="installer"/>
-        <property name="nsis.exe" value="S:\DEVELOP\NSIS\makensis.exe"/>
-        <property name="jdoc.includes" value="**/*.java" />
-        <property name="jdoc.excludes" value="" />
-        <property name="javac.debug" value="true" />
-        <property name="jar.extra.includes" value="" />
-        <property name="default.jar.excludes" value="**/*.svn,${jar.excludes}" />
-        <property name="jdk.base.dir" value="s:/DEVELOP/" />
+        <property name="product.disabled.jars" value="" description="A list of jars to exclude from an installer"/>
+        <property name="fork.javac" value="false" description="Whether to fork javac or not (true or false)"/>
+        <property name="jdoc.includes" value="**/*.java" description="A list of files to include in javadoc"/>
+        <property name="jdoc.excludes" value="docs/javadoc" description="A list of files to exclude in javadoc"/>
+        <property name="java.src.version" value="1.4" description="The java source level to pass to the compiler"/>
+        <property name="java.target.version" value="1.4" description="The java byte code target level to pass to the compiler"/>
+        <property name="javac.includes" value="**/*.java" description="Files to include in compilation"/>
+        <property name="javac.excludes" value="" description="Files to exclude from compilation"/>
+        <property name="ext.dir" value="externals" description="A directory for externals"/>
+        <property name="src.dir" value="src" description="A directory for source code"/>
+        <property name="graphics.dir" value="graphics" description="A directory for graphics"/>
+        <property name="installer.dir" value="installer" description="A directory for installer"/>
+        <property name="test.dir" value="test" description="The name of a test directory"/>
+        <property name="build.dir" value="bin" description="The name of a build directory"/>
+        <property name="test.build.dir" value="${test.dir}/bin" description="The name of a test build directory"/>
+        <property name="dist.dir" value="dist" description="The name of a distributable directory"/>
+        <property name="jdoc.dir" value="doc/javadoc" description="The name of a javadoc directory"/>
+        <property name="nsis.dir" value="installer" description="The name of the nsis installer directory"/>
+        <property name="nsis.exe" value="S:\DEVELOP\NSIS\makensis.exe" description="The full path to the NSIS exe"/>
+        <property name="logs.dir" value="test/logs" />
+        <property name="javac.debug" value="true" description="A flag to pass to javac for including debugging"/>
+        <property name="jar.extra.includes" value="" description="A list of includes to use for adding to jars"/>
+        <property name="jar.excludes" value="" description="A list of excludes for jar building"/>
+        <property name="default.jar.excludes" value="**/*.svn,${jar.excludes}" description="The default excludes - do not change this - instead change jar.excludes"/>
+        <property name="jdk.base.dir" value="s:/DEVELOP/" description="The location to search for jdks"/>
         <property name="java.142.name" value="jdk_142" />
         <property name="java.150.name" value="jdk_150" />
         
@@ -107,6 +107,11 @@
             <equals arg1="${java.src.version}" arg2="1.5" />
         </condition>
         <property name="java.exe" value="${jdk.run.home}/bin/java" />
+    </target>
+    
+    <target name="ant-doc" description="Generate ant documentation" depends="-init,bootstrap">
+        <taskdef name="antdoc" classpathref="rti.buildtools.path" classname="rti.build.ant.GenerateBuildDoc" onerror="ignore"/>
+        <antdoc/>
     </target>
     
     <macrodef name="requireprop">
