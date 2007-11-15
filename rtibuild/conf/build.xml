@@ -1,6 +1,6 @@
 <project name="rtibuild" default="jar" basedir="../">
     
-    <import file="../../common-build.xml"/>
+    <import file="../common-build.xml"/>
     
     <property name="rtibuild.present" value="true"/>
     
