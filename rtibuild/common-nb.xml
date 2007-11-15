@@ -40,8 +40,7 @@
     
     <target name="-redefine" depends="-init">
         <taskdef name="redefine" classpath="${rtibuild.dir}/project/dist/rtibuild_1_0.jar" classname="rti.build.ant.ReloadTask"/>
-        <taskdef name="collectem" classpath="${rtibuild.dir}/project/dist/rtibuild_1_0.jar" classname="rti.build.ant.CollectProductDependencies"/>
-        <collectem/>
+        <collectproducts/>
         <redefine projectDeps="${collected.product.deps}"/>
     </target>
     
