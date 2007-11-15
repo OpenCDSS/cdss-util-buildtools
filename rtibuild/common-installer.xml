@@ -32,7 +32,6 @@
         <mkdir dir="scripts"/>
         <property name="script.name" value="scripts/${product.name}.bat" />
         <available property="script.exists" file="${script.name}" />
-        <taskdef name="collectjars" classpath="${rtibuild.dir}/project/dist/rtibuild_1_0.jar" classname="rti.build.ant.CollectJarDependencies" onerror="ignore"/>
         <collectjars useBuildDirs="false" excludes="${product.disabled.jars}"/>
         <fail if="launcher.vm.args.safe" message="don't set launcher.vm.args.safe"/>
         <condition property="launcher.vm.args.safe" value="">
