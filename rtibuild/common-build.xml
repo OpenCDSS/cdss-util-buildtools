@@ -7,7 +7,7 @@ Common build example - new product layout
 ================================================================================
 -->
 
-<project name="rti-common-build" default="fail">
+<project name="rti-common-build" default="-fail">
     
     <import file="common.xml"/>
     <import file="common-nb.xml"/>
@@ -135,7 +135,7 @@ Common build example - new product layout
         <dojar jar="${jar.name}" />
     </target>
     
-    <target name="jar-deps" description="Create product jar from name and version" depends="-init">
+    <target name="jar-deps" description="Build all dependency jars" depends="-init">
         <deps target="jar" products="${product.deps}"/>
     </target>
     

@@ -1,11 +1,7 @@
 <!-- These targets are used by netbeans ide -->
-<project name="rti-common-nb" default="fail">
+<project name="rti-common-nb" default="-fail">
     
     <import file="common-build.xml"/>
-    
-    <target name="fail">
-        <fail message="Do not call this build directly" />
-    </target>
     
     <target name="-run-selected-file" depends="-init-deps,compile-java-no-deps,-init-java">
         <fail unless="files">Must set property 'files'</fail>

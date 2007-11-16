@@ -31,8 +31,10 @@
         
         <basename property="product.dir.name" file="${basedir}"/>
         <!-- required from product -->
-        <requireprop name="product.name" />
+        <requireprop name="product.name"/>
+        <property name="product.name" value="" description="The name of the product"/>
         <requireprop name="product.version" />
+        <property name="product.version" value="" description="The version of the product"/>
         
         <!-- hard coded defaults - if defined in the above files, they
              will be overridden -->
@@ -71,7 +73,9 @@
         <property name="jar.file" value="${dist.dir}/${jar.name}"/>
         <dirname property="rtibuild.dir" file="${ant.file.rti-common-build}"/>
         
-        <property name="run.classpath" value=""/>
+        <property name="run.classpath" value="" description="The classpath to use during execution"/>
+        <property name="build.classpath" value="" description="The classpath to use during compilation"/>
+        <property name="test.classpath" value="" description="The classpath to use during test execution"/>
         
         <path id="rti.buildtools.path" path="${rtibuild.dir}/dist/rtibuild_1_0.jar"/>
         <taskdef name="collectjars" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectJarDependencies" onerror="ignore"/>

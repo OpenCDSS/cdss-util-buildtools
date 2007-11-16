@@ -2,7 +2,7 @@
 <project name="rti-common-installer" default="-fail">
     <import file="common.xml"/>
     
-    <target name="generate-license" depends="-bootstrap-cipher">
+    <target name="generate-license" depends="-bootstrap-cipher" description="Generate a license file">
         <fail unless="license.owner" message="Must define 'license.owner' property"/>
         <fail unless="license.type" message="Must define 'license.type' property"/>
         <genlicense owner="${license.owner}" type="${license.type}"/>
