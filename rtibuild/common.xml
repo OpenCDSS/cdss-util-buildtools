@@ -37,7 +37,7 @@
         <!-- hard coded defaults - if defined in the above files, they
              will be overridden -->
         <property name="product.disabled.jars" value="" description="A list of jars to exclude from an installer"/>
-        <property name="fork.javac" value="false" description="Whether to fork javac or not (true or false)"/>
+        <property name="fork.javac" value="true" description="Whether to fork javac or not (true or false)"/>
         <property name="jdoc.includes" value="**/*.java" description="A list of files to include in javadoc"/>
         <property name="jdoc.excludes" value="docs/javadoc" description="A list of files to exclude in javadoc"/>
         <property name="java.src.version" value="1.4" description="The java source level to pass to the compiler"/>
@@ -95,7 +95,6 @@
         <condition property="jdk.build.home" value="${jdk.base.dir}/${java.150.name}">
             <equals arg1="${java.src.version}" arg2="1.5" />
         </condition>
-        
         <property name="javac.exe" value="${jdk.build.home}/bin/javac" />
     </target>
     
