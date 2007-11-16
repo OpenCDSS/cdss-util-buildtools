@@ -4,7 +4,8 @@
     
     <property name="rtibuild.present" value="true"/>
     
-    <target name="jar" depends="compile-java-no-deps" description="create reload agent">
+    <target name="jar" description="create build tools" depends="-init-props">
+        <javacompile src="${src.dir}" dest="${build.dir}" cp="${build.classpath}"/>
         <dojar jar="${jar.name}">
             <atts>
                 <attribute name="Premain-Class" value="rti.agent.ReloadAgent"/>
