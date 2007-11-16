@@ -55,6 +55,12 @@
         </echo>
     </target>
     
+    <target name="local-install" description="build local installation" depends="-init,-init-deps,jar,jar-deps">
+        <fail unless="jre.install.dest.dir" message="You must define the name of the jre destination directory"/>
+        <fail unless="jre.install.src.dir" message="You must define the path to the jre used for installation"/>
+        <standard-local-install jreInstalledName="${jre.install.dest.dir}" jreToInstall="${jre.install.src.dir}"/>
+    </target>
+    
     <macrodef name="standard-local-install" description="perform a local install for a 'standard' app">
         <attribute name="licenseOwner" default="Demo User"/>
         <attribute name="licenseType" default="Demo"/>
