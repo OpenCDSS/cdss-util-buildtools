@@ -55,6 +55,30 @@
         </echo>
     </target>
     
+    <macrodef name="standard-local-install" description="perform a local install for a 'standard' app">
+        <attribute name="licenseOwner" default="Demo User"/>
+        <attribute name="licenseType" default="Demo"/>
+        <attribute name="jreInstalledName"/>
+        <attribute name="jreToInstall"/>
+        <sequential>
+            <property name="license.owner" value="@{licenseOwner}"/>
+            <property name="license.type" value="@{licenseType}"/>
+
+            <mkdir dir="${install.dir}"/>
+            <mkdir dir="${install.dir}/bin"/>
+            <mkdir dir="${install.dir}/doc"/>
+            <mkdir dir="${install.dir}/system"/>
+
+            <antcall target="generate-license" inheritall="true"/>
+            <collectjars refid="collected.jar.files" excludes="${product.disabled.jars}"/>
+            <copy todir="${install.dir}/bin" flatten="true">
+                <filelist refid="collected.jar.files"/>
+            </copy>
+            <copy todir="${install.dir}/@{jreInstalledName}"><fileset dir="jreToInstall"/></copy>
+            <make-exe/>
+        </sequential>
+    </macrodef>
+    
     <macrodef name="make-exe" description="create an executable">
         <attribute name="destDir" default="${dist.dir}/install/bin"/>
         <attribute name="exe" default="${product.name}-${product.version}"/>
