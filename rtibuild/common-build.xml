@@ -143,6 +143,12 @@ Common build example - new product layout
         <deps target="jar" products="${product.deps}"/>
         <nsisinstaller nsi="${nsis.file}"/>
     </target>
+        	
+    <target name="local-install" description="build local installation" depends="-init,-init-deps,jar,jar-deps">
+        <fail unless="jre.install.dest.dir" message="You must define the name of the jre destination directory"/>
+        <fail unless="jre.install.src.dir" message="You must define the path to the jre used for installation"/>
+        <standard-local-install jreInstalledName="${jre.install.dest.dir}" jreToInstall="${jre.install.src.dir}"/>
+    </target>
     
     <target name="-pre-installer"/>
     <target name="-post-installer"/>
