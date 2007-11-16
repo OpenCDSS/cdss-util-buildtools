@@ -14,7 +14,7 @@
     </path>
     <taskdef resource="emma_ant.properties" classpathref="emma.libs" />
     
-    <target name="-init" depends="-init-props"/>
+    <target name="-init" depends="-init-props,bootstrap"/>
     
     <!--Properties that common build uses
         generate-with: grep -o '${[a-z.]*}' common-build.xml | tr -d '${}' | sort | uniq
@@ -85,7 +85,7 @@
         <fail unless="rtibuild.present" message="Please run the bootstrap target to build rtibuild ant extensions"/>
         <echo level="verbose">Disabled jars : ${product.disabled.jars}</echo>
         <collectjars useBuildDirs="true" excludes="${product.disabled.jars}"/>
-        <property name="run.classpath.computed" value="${build.dir}:${collected.jar.deps}"/>
+        <property name="run.classpath.computed" value="${build.dir}:${collected.jar.deps}" description="The final computed classpath - do not change this"/>
         <path id="collected.deps.path"/>
     </target>
     
@@ -96,7 +96,7 @@
         <condition property="jdk.build.home" value="${jdk.base.dir}/${java.150.name}">
             <equals arg1="${java.src.version}" arg2="1.5" />
         </condition>
-        <property name="javac.exe" value="${jdk.build.home}/bin/javac" />
+        <property name="javac.exe" value="${jdk.build.home}/bin/javac" description="The javac executable to use when forking"/>
     </target>
     
     <target name="-init-java" depends="-init">
@@ -106,7 +106,7 @@
         <condition property="jdk.run.home" value="${jdk.base.dir}/${java.150.name}">
             <equals arg1="${java.src.version}" arg2="1.5" />
         </condition>
-        <property name="java.exe" value="${jdk.run.home}/bin/java" />
+        <property name="java.exe" value="${jdk.run.home}/bin/java" description="The java executable to use when executing"/>
     </target>
     
     <target name="ant-doc" description="Generate ant documentation" depends="-init,bootstrap">
@@ -123,7 +123,7 @@
     
     <macrodef name="testsuite">
         <attribute name="suite" description="the java suite to run" />
-        <attribute name="out" />
+        <attribute name="out" description="The destination for test results"/>
         <attribute name="dir" default="${user.dir}"/>
         <attribute name="cp" default="${build.classpath}:${test.classpath}" />
         <sequential>
@@ -140,7 +140,7 @@
     </macrodef>
     
     <macrodef name="dojar">
-        <attribute name="jar" />
+        <attribute name="jar"/>
         <attribute name="dist.dir" default="${dist.dir}" />
         <attribute name="dir" default="${build.dir}" />
         <attribute name="includes" default="${jar.includes}" />
