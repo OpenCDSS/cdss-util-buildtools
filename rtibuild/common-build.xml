@@ -13,6 +13,16 @@ Common build example - new product layout
     <import file="common-nb.xml"/>
     <import file="common-installer.xml"/>  
     
+    <target name="-init-build" depends="-init">
+        <property name="java.main.vmargs" value="" description="VM arguments to pass to java during execution"/>
+        <property name="java.main.cwd" value="${basedir}" description="The current working directory to run with"/>
+        <property name="java.main.class" description="The main class to run with"/>
+        <property name="coverage.dir" location="${test.build.dir}/coverage" description="emma coverage output directory"/>
+        <property name="emma.filter" value="rti.*, RTi.*" description="emma includes filter"/>
+        <property name="emma.enabled" description="Enable/disable of emma during compilation - only set this to false if you do not desire unit testing coverage"/>
+        <property name="nsis.file" value="${product.name}.nsi" description="the nsis file to use for creating an installer"/>
+    </target>
+    
     <target name="-pre-compile-java"/>
     
     <target name="compile-java-no-deps" description="Compile java but set nodeps flag for products with dependencies" depends="-init">
@@ -103,10 +113,8 @@ Common build example - new product layout
         <ant antfile="${test.dir}/build.xml" target="build-all-tests"/>
     </target>
     
-    <target name="run" description="Run java.main.class as defined in product" depends="-init-deps,-init-java">
+    <target name="run" description="Run java.main.class as defined in product" depends="-init-deps,-init-java,-init-build">
         <requireprop name="java.main.class" />
-        <property name="java.main.vmargs" value=""/>
-        <property name="java.main.cwd" value="${basedir}"/>
         <runjava main="${java.main.class}" cp="${run.classpath.computed}" args="${java.main.args}" dir="${java.main.cwd}">
             <vmargs><jvmarg value="${java.main.vmargs}"/></vmargs>
         </runjava>
@@ -138,26 +146,27 @@ Common build example - new product layout
     <target name="dist" description="Perform any distribution related activities" depends="jar" />
     
     <target name="installer" description="Create an installer for this product" depends="-pre-installer,jar,-post-installer">
-        <property name="nsis.file" value="${product.name}.nsi"/>
-        <echo>${product.deps}</echo>
-        <deps target="jar" products="${product.deps}"/>
         <nsisinstaller nsi="${nsis.file}"/>
     </target>
+    
+    <target name="clean-and-build-local-install" description="clean and build local install" depends="clean-local-install,local-install"/>
         	
+    <target name="clean-local-install" description="delete local install">
+        <delete dir="${install.dir}" quiet="true" />
+    </target>
+    
     <target name="local-install" description="build local installation" depends="-init,-init-deps,jar,jar-deps">
         <fail unless="jre.install.dest.dir" message="You must define the name of the jre destination directory"/>
         <fail unless="jre.install.src.dir" message="You must define the path to the jre used for installation"/>
         <standard-local-install jreInstalledName="${jre.install.dest.dir}" jreToInstall="${jre.install.src.dir}"/>
     </target>
     
-    <target name="-pre-installer"/>
-    <target name="-post-installer"/>
+    <target name="-pre-installer" description="Hook to execute before installer"/>
+    <target name="-post-installer" description="Hook to execute after installer"/>
     
-    <target name="-enable-emma">
+    <target name="-enable-emma" depends="-init-build">
         <property name="emma.enabled" value="true" />
-        <property name="coverage.dir" location="${test.build.dir}/coverage"/>
         <mkdir dir="${coverage.dir}"/>
-        <property name="emma.filter" value="rti.*, RTi.*" />
     </target>
     
     <target name="-emma">
