@@ -63,6 +63,7 @@
         <property name="jdk.base.dir" value="s:/DEVELOP/" description="The location to search for jdks"/>
         <property name="java.142.name" value="jdk_142" />
         <property name="java.150.name" value="jdk_150" />
+        <property name="install.dir" value="${dist.dir}/install" description="The location of a local install"/>
         
         <!-- computed properties-->
         <property name="jar.includes" value="**/*.png,**/*.gif,**/*.jpg,**/*.class/,**/*.properties,META-INF/**/*,${jar.extra.includes}" />
