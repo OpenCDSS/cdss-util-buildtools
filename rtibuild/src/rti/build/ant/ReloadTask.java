@@ -63,7 +63,7 @@ public class ReloadTask extends Task {
         if (classes.length() > 0 && inc.length > 0)
             classes.append(',');
         for (int j = 0; j < inc.length; j++) {
-            String clazz = inc[j].replace(File.separatorChar,'.').replace(".java","");
+            String clazz = inc[j].replace(File.separatorChar,'.').replaceAll("\\.java","");
             classes.append(clazz);
             if (j + 1 < inc.length) {
                 classes.append(',');

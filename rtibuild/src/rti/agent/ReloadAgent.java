@@ -67,20 +67,20 @@ public class ReloadAgent implements Runnable {
         Scanner lines = new Scanner(client.getInputStream());
         Scanner s = new Scanner(lines.nextLine());
         Pattern pathElement = Pattern.compile(File.pathSeparator);
-        ArrayList<URL> urls = new ArrayList<URL>();
+        ArrayList urls = new ArrayList();
         s.useDelimiter(pathElement);
         while (s.hasNext()) {
             String el = s.next();
             System.out.println("el " + el );
             urls.add(new File(el).toURI().toURL());
         }
-        URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[urls.size()]));
+        URLClassLoader loader = new URLClassLoader( (URL[]) urls.toArray(new URL[urls.size()]));
         Pattern className = Pattern.compile("[,]");
         if (lines.hasNextLine()) {
             s = new Scanner(lines.nextLine());
             s.useDelimiter(className);
         }
-        ArrayList<ClassDefinition> redefines = new ArrayList<ClassDefinition>();
+        ArrayList redefines = new ArrayList();
         while (s.hasNext()) {
             String name = s.next();
             String resourceName = name;
@@ -99,7 +99,7 @@ public class ReloadAgent implements Runnable {
             }
         }
         System.out.println("redfining " + redefines);
-        inst.redefineClasses(redefines.toArray(new ClassDefinition[0]));
+        inst.redefineClasses((ClassDefinition[]) redefines.toArray(new ClassDefinition[0]));
         System.out.println("done");
     }
     

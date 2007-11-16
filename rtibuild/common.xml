@@ -4,7 +4,7 @@
         <fail message="Do not call this build directly" />
     </target>      
     
-    <target name="bootstrap" description="build the rtibuild dependencies">
+    <target name="bootstrap" description="build the rtibuild dependencies" unless="skip-bootstrap">
         <ant inheritall="false" dir="${ant.file.rti-common}/.." antfile="conf/build.xml" target="jar"/>
     </target>
     
