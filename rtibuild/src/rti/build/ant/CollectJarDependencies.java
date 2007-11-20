@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.FileList;
+import org.apache.tools.ant.types.Path;
 
 /**
  *
@@ -49,18 +50,26 @@ public class CollectJarDependencies extends CollectProductDependencies {
         }
     }
 
-    private FileList buildRef(Collection jarFiles) {
+    private Path buildRef(Collection jarFiles) {
         FileList files = new FileList();
+        Path path = new Path(getProject());
+        path.addFilelist(files);
         File root = getProject().getBaseDir().getAbsoluteFile().getParentFile();
         files.setDir(root);
         Iterator it = jarFiles.iterator();
         while (it.hasNext()) {
             File f = (File) it.next();
-            FileList.FileName name = new FileList.FileName();
-            name.setName(Utils.getRelativePath(root, f.getAbsoluteFile()));
-            files.addConfiguredFile(name);
+            String fName = f.getAbsolutePath();
+            String rPath = Utils.getRelativePath(root, f.getAbsoluteFile());
+            if (!fName.equals(rPath)) {
+                FileList.FileName name = new FileList.FileName();
+                name.setName(Utils.getRelativePath(root, f.getAbsoluteFile()));
+                files.addConfiguredFile(name);
+            } else {
+                path.add(new Path(getProject(),fName));
+            }
         }
-        return files;
+        return path;
     }
 
     private File getProductJar(File productDir, String depName) {

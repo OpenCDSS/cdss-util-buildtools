@@ -72,7 +72,7 @@
             <antcall target="generate-license" inheritall="true"/>
             <collectjars refid="collected.jar.files" excludes="${product.disabled.jars}"/>
             <copy todir="${install.dir}/bin" flatten="true">
-                <filelist refid="collected.jar.files"/>
+                <path refid="collected.jar.files"/>
             </copy>
             <copy todir="${install.dir}/@{jreInstalledName}"><fileset dir="jreToInstall"/></copy>
             <make-exe/>
