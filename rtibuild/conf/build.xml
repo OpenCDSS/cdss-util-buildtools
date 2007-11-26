@@ -4,7 +4,7 @@
     
     <property name="rtibuild.present" value="true"/>
     
-    <target name="jar" description="create build tools" depends="-init-props">
+    <target name="jar" description="create build tools" depends="-init-props,-init-javac">
         <javacompile src="${src.dir}" dest="${build.dir}" cp="${build.classpath}"/>
         <dojar jar="${jar.name}">
             <atts>
