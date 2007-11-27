@@ -74,7 +74,7 @@
             <copy todir="${install.dir}/bin" flatten="true">
                 <path refid="collected.jar.files"/>
             </copy>
-            <copy todir="${install.dir}/@{jreInstalledName}"><fileset dir="jreToInstall"/></copy>
+            <copy todir="${install.dir}/@{jreInstalledName}"><fileset dir="@{jreToInstall}"/></copy>
             <make-exe/>
         </sequential>
     </macrodef>

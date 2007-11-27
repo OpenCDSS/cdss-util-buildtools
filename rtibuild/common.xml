@@ -1,11 +1,11 @@
 <project name="rti-common" default="-fail">
-    
     <target name="-fail">
         <fail message="Do not call this build directly" />
     </target>      
     
     <target name="bootstrap" description="build the rtibuild dependencies" unless="skip-bootstrap">
         <ant inheritall="false" dir="${ant.file.rti-common}/.." antfile="conf/build.xml" target="jar"/>
+        <property name="skip-bootstrap" value="true"/>
     </target>
     
     <path id="emma.libs">
@@ -21,7 +21,8 @@
 	-->
         
     <target name="-init-props">
-        <!-- Product specific details should never go into the user properties,
+        
+    <!-- Product specific details should never go into the user properties,
              it should only be used to specify jdk or other common tool/library
              paths
         -->
@@ -30,11 +31,6 @@
         <property file="conf/product.properties" />
         
         <basename property="product.dir.name" file="${basedir}"/>
-        <!-- required from product -->
-        <requireprop name="product.name"/>
-        <property name="product.name" value="" description="The name of the product"/>
-        <requireprop name="product.version" />
-        <property name="product.version" value="" description="The version of the product"/>
         
         <!-- hard coded defaults - if defined in the above files, they
              will be overridden -->
@@ -80,9 +76,14 @@
         <path id="rti.buildtools.path" path="${rtibuild.dir}/dist/rtibuild_1_0.jar"/>
         <taskdef name="collectjars" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectJarDependencies" onerror="ignore"/>
         <taskdef name="collectproducts" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectProductDependencies" onerror="ignore"/>
+        <!-- required from product -->
+        <requireprop name="product.name"/>
+        <property name="product.name" value="" description="The name of the product"/>
+        <requireprop name="product.version" />
+        <property name="product.version" value="" description="The version of the product"/>
     </target>
     
-    <target name="-init-deps" depends="bootstrap,-init">
+    <target name="-init-deps" depends="-init">
         <available property="rtibuild.present" file="${rtibuild.dir}/dist/rtibuild_1_0.jar"/>
         <fail unless="rtibuild.present" message="Please run the bootstrap target to build rtibuild ant extensions"/>
         <available property="rtibuild.present" file="${rtibuild.dir}/dist/rtibuild_1_0.jar"/>
@@ -93,7 +94,7 @@
         <path id="collected.deps.path"/>
     </target>
     
-    <target name="-init-javac" depends="-init">
+    <target name="-init-javac" depends="-init-props">
         <condition property="jdk.build.home" value="${jdk.base.dir}/${java.142.name}">
             <equals arg1="${java.src.version}" arg2="1.4" />
         </condition>
@@ -113,7 +114,7 @@
         <property name="java.exe" value="${jdk.run.home}/bin/java" description="The java executable to use when executing"/>
     </target>
     
-    <target name="ant-doc" description="Generate ant documentation" depends="-init,bootstrap">
+    <target name="ant-doc" description="Generate ant documentation" depends="-init">
         <taskdef name="antdoc" classpathref="rti.buildtools.path" classname="rti.build.ant.GenerateBuildDoc" onerror="ignore"/>
         <antdoc/>
     </target>
@@ -259,6 +260,7 @@
                 <property name="@{deps}" value="@{deps}"/>
                 <!-- hack for netbeans projects -->
                 <property name="platform.home" value="${jdk.build.home}"/>
+                <property name="skip-bootstrap" value="${skip-bootstrap}"/>
                 <inherited/>
                 <filelist dir="." files="@{products}"/>
             </subant>
