@@ -68,6 +68,7 @@
             <mkdir dir="${install.dir}/bin"/>
             <mkdir dir="${install.dir}/doc"/>
             <mkdir dir="${install.dir}/system"/>
+            <mkdir dir="${install.dir}/@{jreInstalledName}"/>
 
             <antcall target="generate-license" inheritall="true"/>
             <collectjars refid="collected.jar.files" excludes="${product.disabled.jars}"/>
