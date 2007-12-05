@@ -86,8 +86,8 @@ public class GenerateBuildDoc extends Task {
         trans.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         trans.transform(new DOMSource(doc), new StreamResult(new File(getOutputDirectory(),
                 "antdoc.html")));
-        factory.newTransformer().transform(new DOMSource(doc),
-                new StreamResult(System.out));
+//        factory.newTransformer().transform(new DOMSource(doc),
+//                new StreamResult(System.out));
     }
 
     private Document parseDoc(File f) throws Exception {
