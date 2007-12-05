@@ -2,6 +2,16 @@
 <project name="rti-common-installer" default="-fail">
     <import file="common.xml"/>
     
+    <target name="-init-installer">
+        <property name="preferred.heap.size" value="256m" description="preferred vm heap size for exe launcher"/>
+    </target>
+    
+    <target name="local-install" description="build local installation" depends="-init,-init-deps,-init-installer,jar,jar-deps">
+        <fail unless="jre.install.dest.dir" message="You must define the name of the jre destination directory"/>
+        <fail unless="jre.install.src.dir" message="You must define the path to the jre used for installation"/>
+        <standard-local-install jreInstalledName="${jre.install.dest.dir}" jreToInstall="${jre.install.src.dir}"/>
+    </target>
+    
     <target name="generate-license" depends="-bootstrap-cipher" description="Generate a license file">
         <fail unless="license.owner" message="Must define 'license.owner' property"/>
         <fail unless="license.type" message="Must define 'license.type' property"/>
@@ -63,20 +73,20 @@
         <sequential>
             <property name="license.owner" value="@{licenseOwner}"/>
             <property name="license.type" value="@{licenseType}"/>
-
+            
             <mkdir dir="${install.dir}"/>
             <mkdir dir="${install.dir}/bin"/>
             <mkdir dir="${install.dir}/doc"/>
             <mkdir dir="${install.dir}/system"/>
             <mkdir dir="${install.dir}/@{jreInstalledName}"/>
-
+            
             <antcall target="generate-license" inheritall="true"/>
             <collectjars refid="collected.jar.files" excludes="${product.disabled.jars}"/>
             <copy todir="${install.dir}/bin" flatten="true">
                 <path refid="collected.jar.files"/>
             </copy>
             <copy todir="${install.dir}/@{jreInstalledName}"><fileset dir="@{jreToInstall}"/></copy>
-            <make-exe/>
+            <make-exe jreName="@{jreInstalledName}"/>
         </sequential>
     </macrodef>
     
@@ -85,17 +95,18 @@
         <attribute name="exe" default="${product.name}-${product.version}"/>
         <attribute name="mainClass" default="${java.main.class}"/>
         <attribute name="productIcon" default="${product.icon}"/>
-        <attribute name="preferredHeapSize" default="256m"/>
+        <attribute name="preferredHeapSize" default="${preferred.heap.size}"/>
+        <attribute name="jreName"/>
         <sequential>
             <copy file="${ant.file.rti-common-build}/../lib/winrun4j.exe" tofile="@{destDir}/@{exe}.exe"/>
             <chmod file="@{destDir}/@{exe}.exe" perm="ugo+rx"/>
             <echo file="@{destDir}/@{exe}.ini">classpath.1=bin/*.jar
-main.class=@{mainClass}
-vm.location=../jre_150/bin/client/jvm.dll
-vmarg.1=-Dcom.sun.management.jmxremote
-vmarg.2=-ea
-vm.heapsize.preferred=@{preferredHeapSize}
-working.directory=..
+                main.class=@{mainClass}
+                vm.location=../${jreName}/bin/client/jvm.dll
+                vmarg.1=-Dcom.sun.management.jmxremote
+                vmarg.2=-ea
+                vm.heapsize.preferred=@{preferredHeapSize}
+                working.directory=..
             </echo>
         </sequential>
     </macrodef>
