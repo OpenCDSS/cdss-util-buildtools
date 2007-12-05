@@ -3,9 +3,11 @@
         <fail message="Do not call this build directly" />
     </target>      
     
-    <target name="bootstrap" description="build the rtibuild dependencies" unless="skip-bootstrap">
-        <ant inheritall="false" dir="${ant.file.rti-common}/.." antfile="conf/build.xml" target="jar"/>
-        <property name="skip-bootstrap" value="true"/>
+    <target name="bootstrap" description="build the rtibuild dependencies" unless="skip.bootstrap">
+        <ant inheritall="false" dir="${ant.file.rti-common}/.." antfile="conf/build.xml" target="jar">
+            <property name="skip.bootstrap" value="true"/>
+        </ant>
+        <property name="skip.bootstrap" value="true"/>
     </target>
     
     <path id="emma.libs">
