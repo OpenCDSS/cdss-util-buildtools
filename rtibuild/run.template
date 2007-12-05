@@ -30,7 +30,7 @@ fi
 java="${java-"@java.exe@"}"
 while [ $# -gt 0 ] ; do
   case "$1" in
-    -jdkhome|--jdkhome) shift; if [ $# -gt 0 ] ; then jdkhome=$1; fi
+    -jdkhome|--jdkhome) shift; if [ $# -gt 0 ] ; then java=$1/bin/java; fi
      ;;
     -J*) jopt=`expr "X-$1" : 'X--J\(.*\)'`; jargs="$jargs \"$jopt\""
      ;;
