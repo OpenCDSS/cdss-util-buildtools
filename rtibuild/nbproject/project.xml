@@ -6,9 +6,9 @@
             <!-- Do not use Project Properties customizer when editing this file manually. -->
             <name>rtibuild</name>
             <properties>
-                <property name="ant.script">conf/build.xml</property>
                 <property-file>${user.home}/.rtibuild.properties</property-file>
                 <property-file>conf/product.properties</property-file>
+                <property name="ant.script">conf/build.xml</property>
             </properties>
             <folders>
                 <source-folder>
