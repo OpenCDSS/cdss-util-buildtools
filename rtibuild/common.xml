@@ -161,6 +161,7 @@
             <mkdir dir="@{dist.dir}" />
             <jar destfile="@{dist.dir}/@{jar}" excludes="@{excludes}" compress="@{compress}">
                 <manifest>
+                    <!-- @todo don't add this if there is no main class -->
                     <attribute name="Main-Class" value="@{mainClass}"/>
                     <attribute name="Built-By" value="${user.name}" />
                     <attribute name="Specification-Title" value="${product.name}" />
@@ -214,6 +215,7 @@
         <attribute name="deprecation" default="on" />
         <attribute name="executable" default="${javac.exe}" />
         <attribute name="useant" default="no" />
+        <attribute name="failOnError" default="true"/>
         <attribute name="cp" />
         <sequential>
             <mkdir dir="@{dest}" />
@@ -221,7 +223,7 @@
                    includes="@{includes}" excludes="@{excludes}" 
                    destdir="@{dest}" debug="@{debug}" deprecation="@{deprecation}" 
                    executable="@{executable}" includeAntRuntime="@{useant}" 
-                   fork="@{fork}" failonerror="true">
+                   fork="@{fork}" failonerror="@{failOnError}">
                 <classpath>
                     <path path="@{cp}" />
                 </classpath>

@@ -102,7 +102,7 @@
             <chmod file="@{destDir}/@{exe}.exe" perm="ugo+rx"/>
             <echo file="@{destDir}/@{exe}.ini">classpath.1=bin/*.jar
                 main.class=@{mainClass}
-                vm.location=../${jreName}/bin/client/jvm.dll
+                vm.location=../@{jreName}/bin/client/jvm.dll
                 vmarg.1=-Dcom.sun.management.jmxremote
                 vmarg.2=-ea
                 vm.heapsize.preferred=@{preferredHeapSize}
