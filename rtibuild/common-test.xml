@@ -159,14 +159,17 @@
                 <formatter type="xml"/>
                 <classpath>
                     <!-- add instrumented classes first -->
-                    <path path="${coverage.dir}/instr"/>
-                    <path path="@{cp}:@{build}"/>
+                    <pathelement path="${coverage.dir}/instr"/>
+                    <path path="@{cp}"/>
+                    <path path="@{build}"/>
                     <path refid="emma.libs"/>
                 </classpath>
+                
+                <!-- be sure to exclude coverage/** or a bunch of classloader problems will ensue -->
                 <batchtest todir="@{out}">
                     <fileset dir="@{build}" 
                              includes="@{include} ${@{type}.test.include}" 
-                             excludes="@{exclude} ${@{type}.test.exclude}">
+                             excludes="${coverage.dir}/** @{exclude} ${@{type}.test.exclude}">
                     </fileset>
                 </batchtest>
             </junit>

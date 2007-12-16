@@ -124,6 +124,10 @@
     <macrodef name="requireprop">
         <attribute name="name" />
         <sequential>
+            <condition property="@{name}.undefined">
+                <equals arg1="${@{name}}" arg2="undefined"/>
+            </condition>
+            <fail if="@{name}.undefined" message="@{name} must be defined"/>
             <fail unless="@{name}" message="product must define property @{name}" />
         </sequential>
     </macrodef>

@@ -16,10 +16,9 @@ Common build example - new product layout
     <target name="-init-build" depends="-init">
         <property name="java.main.vmargs" value="" description="VM arguments to pass to java during execution"/>
         <property name="java.main.cwd" value="${basedir}" description="The current working directory to run with"/>
-        <property name="java.main.class" description="The main class to run with"/>
+        <property name="java.main.class" value="undefined" description="The main class to run with"/>
         <property name="coverage.dir" location="${test.build.dir}/coverage" description="emma coverage output directory"/>
         <property name="emma.filter" value="rti.*, RTi.*" description="emma includes filter"/>
-        <property name="emma.enabled" description="Enable/disable of emma during compilation - only set this to false if you do not desire unit testing coverage"/>
         <property name="nsis.file" value="${product.name}.nsi" description="the nsis file to use for creating an installer"/>
     </target>
     
