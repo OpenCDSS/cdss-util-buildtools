@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="common-deploy" default="-die" basedir=".">
+    <target name="-die">
+        <fail message="no default target"/>
+    </target>
+    
+    <macrodef name="rsync-ssh">
+        <attribute name="src"/>
+        <attribute name="dest"/>
+        <element name="args" optional="true"/>
+        <sequential>
+            <exec executable="c://cygwin/bin/rsync.exe">
+                <arg value="-avz"/>
+                <arg value="-e 'c://cygwin/bin/ssh.exe'"/>
+                <args/>
+                <arg value="@{src}"/>
+                <arg value="@{dest}"/>
+            </exec>
+        </sequential>
+    </macrodef>
+</project>
