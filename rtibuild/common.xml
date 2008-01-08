@@ -16,7 +16,7 @@
     </path>
     <taskdef resource="emma_ant.properties" classpathref="emma.libs" />
     
-    <target name="-init" depends="-init-props,bootstrap"/>
+    <target name="-init" depends="-init-props,bootstrap,-init-plugins"/>
     
     <!--Properties that common build uses
         generate-with: grep -o '${[a-z.]*}' common-build.xml | tr -d '${}' | sort | uniq
@@ -75,14 +75,17 @@
         <property name="build.classpath" value="" description="The classpath to use during compilation"/>
         <property name="test.classpath" value="" description="The classpath to use during test execution"/>
         
-        <path id="rti.buildtools.path" path="${rtibuild.dir}/dist/rtibuild_1_0.jar"/>
-        <taskdef name="collectjars" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectJarDependencies" onerror="ignore"/>
-        <taskdef name="collectproducts" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectProductDependencies" onerror="ignore"/>
         <!-- required from product -->
         <requireprop name="product.name"/>
         <property name="product.name" value="" description="The name of the product"/>
         <requireprop name="product.version" />
         <property name="product.version" value="" description="The version of the product"/>
+    </target>
+    
+    <target name="-init-plugins">
+        <path id="rti.buildtools.path" path="${rtibuild.dir}/dist/rtibuild_1_0.jar"/>
+        <taskdef name="collectjars" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectJarDependencies" onerror="ignore"/>
+        <taskdef name="collectproducts" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectProductDependencies" onerror="ignore"/>        
     </target>
     
     <target name="-init-deps" depends="-init">
