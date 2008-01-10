@@ -6,10 +6,15 @@
         <property name="preferred.heap.size" value="256m" description="preferred vm heap size for exe launcher"/>
     </target>
     
-    <target name="local-install" description="build local installation" depends="-init,-init-deps,-init-installer,jar,jar-deps">
+    <target name="local-install" description="build local installation" depends="-init,-init-deps,-init-installer,jar,jar-deps,-install-jre">
+        <standard-local-install/>
+    </target>
+    
+    <target name="-install-jre" depends="-init" if="jre.install.dest.dir">
         <fail unless="jre.install.dest.dir" message="You must define the name of the jre destination directory"/>
         <fail unless="jre.install.src.dir" message="You must define the path to the jre used for installation"/>
-        <standard-local-install jreInstalledName="${jre.install.dest.dir}" jreToInstall="${jre.install.src.dir}"/>
+        <mkdir dir="${install.dir}/@{jreInstalledName}"/>
+        <copy todir="${install.dir}/@{jreInstalledName}"><fileset dir="@{jreToInstall}"/></copy>
     </target>
     
     <target name="generate-license" depends="-bootstrap-cipher" description="Generate a license file">
@@ -68,8 +73,6 @@
     <macrodef name="standard-local-install" description="perform a local install for a 'standard' app">
         <attribute name="licenseOwner" default="Demo User"/>
         <attribute name="licenseType" default="Demo"/>
-        <attribute name="jreInstalledName"/>
-        <attribute name="jreToInstall"/>
         <sequential>
             <property name="license.owner" value="@{licenseOwner}"/>
             <property name="license.type" value="@{licenseType}"/>
@@ -78,14 +81,12 @@
             <mkdir dir="${install.dir}/bin"/>
             <mkdir dir="${install.dir}/doc"/>
             <mkdir dir="${install.dir}/system"/>
-            <mkdir dir="${install.dir}/@{jreInstalledName}"/>
             
             <antcall target="generate-license" inheritall="true"/>
             <collectjars refid="collected.jar.files" excludes="${product.disabled.jars}"/>
             <copy todir="${install.dir}/bin" flatten="true">
                 <path refid="collected.jar.files"/>
             </copy>
-            <copy todir="${install.dir}/@{jreInstalledName}"><fileset dir="@{jreToInstall}"/></copy>
             <make-exe jreName="@{jreInstalledName}"/>
         </sequential>
     </macrodef>
