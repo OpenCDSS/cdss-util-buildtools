@@ -30,6 +30,10 @@
         -->
         <property file="${user.home}/.rtibuild.properties"/>
         <property file="conf/product-user.properties" />
+	<condition property="os.properties" value="unix.properties">
+	    <os family="unix"/>
+	</condition>
+	<property file="${ant.file.rti-common}/../conf/${os.properties}"/>
         <property file="conf/product.properties" />
         
         <basename property="product.dir.name" file="${basedir}"/>
