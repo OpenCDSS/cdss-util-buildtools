@@ -99,7 +99,8 @@
         <attribute name="preferredHeapSize" default="${preferred.heap.size}"/>
         <attribute name="jreName"/>
         <sequential>
-            <copy file="${ant.file.rti-common-build}/../lib/winrun4j.exe" tofile="@{destDir}/@{exe}.exe"/>
+            <!-- @todo FIX ME -->
+            <copy failonerror="false" file="${ant.file.rti-common-build}/../lib/winrun4j.exe" tofile="@{destDir}/@{exe}.exe"/>
             <chmod file="@{destDir}/@{exe}.exe" perm="ugo+rx"/>
             <echo file="@{destDir}/@{exe}.ini">classpath.1=bin/*.jar
                 main.class=@{mainClass}
