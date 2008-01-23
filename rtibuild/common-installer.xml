@@ -4,21 +4,25 @@
     
     <target name="-init-installer">
         <property name="preferred.heap.size" value="256m" description="preferred vm heap size for exe launcher"/>
+        <fail unless="dist.dir"/>
+        <property name="install.dir" value="${dist.dir}/install"/>
     </target>
     
     <target name="local-install" description="build local installation" depends="-init,-init-deps,-init-installer,jar,jar-deps,-install-jre">
-        <standard-local-install/>
+        <standard-local-install installDir="${install.dir}"/>
+        <antcall target="generate-license" inheritall="true"/>
     </target>
     
     <target name="local-install-no-build" description="build local installation" depends="-init,-init-deps,-init-installer">
-        <standard-local-install/>
+        <standard-local-install installDir="${install.dir}"/>
+        <antcall target="generate-license" inheritall="true"/>
     </target>
     
     <target name="-install-jre" depends="-init" if="jre.install.dest.dir">
         <fail unless="jre.install.dest.dir" message="You must define the name of the jre destination directory"/>
         <fail unless="jre.install.src.dir" message="You must define the path to the jre used for installation"/>
         <mkdir dir="${install.dir}/${jre.install.dest.dir}"/>
-        <copy failonerror="false" todir="${jre.install.dest.dir}/${jre.install.src.dir}"><fileset dir="${jre.install.src.dir}"/></copy>
+        <copy failonerror="false" todir="${install.dir}/${jre.install.dest.dir}"><fileset dir="${jre.install.src.dir}"/></copy>
     </target>
     
     <target name="generate-license" depends="-bootstrap-cipher" description="Generate a license file">
@@ -77,18 +81,18 @@
     <macrodef name="standard-local-install" description="perform a local install for a 'standard' app">
         <attribute name="licenseOwner" default="Demo User"/>
         <attribute name="licenseType" default="Demo"/>
+        <attribute name="installDir"/>
         <sequential>
             <property name="license.owner" value="@{licenseOwner}"/>
             <property name="license.type" value="@{licenseType}"/>
             
-            <mkdir dir="${install.dir}"/>
-            <mkdir dir="${install.dir}/bin"/>
-            <mkdir dir="${install.dir}/doc"/>
-            <mkdir dir="${install.dir}/system"/>
+            <mkdir dir="@{installDir}"/>
+            <mkdir dir="@{installDir}/bin"/>
+            <mkdir dir="@{installDir}/doc"/>
+            <mkdir dir="@{installDir}/system"/>
             
-            <antcall target="generate-license" inheritall="true"/>
             <collectjars refid="collected.jar.files" excludes="${product.disabled.jars}"/>
-            <copy todir="${install.dir}/bin" flatten="true">
+            <copy todir="@{installDir}/bin" flatten="true">
                 <path refid="collected.jar.files"/>
             </copy>
         </sequential>
