@@ -96,7 +96,7 @@
         <fail unless="rtibuild.present" message="Please run the bootstrap target to build rtibuild ant extensions"/>
         <echo level="verbose">Disabled jars : ${product.disabled.jars}</echo>
         <collectjars useBuildDirs="true" excludes="${product.disabled.jars}"/>
-        <property name="run.classpath.computed" value="${build.dir}:${collected.jar.deps}" description="The final computed classpath - do not change this"/>
+        <property name="run.classpath.computed" value="${build.dir}:${build.classpath}:${collected.jar.deps}" description="The final computed classpath - do not change this"/>
         <path id="collected.deps.path"/>
     </target>
     
