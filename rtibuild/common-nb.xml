@@ -16,7 +16,9 @@
         </condition>
         <runjava main="${files}" cp="${run.classpath.computed}">
             <vmargs>
+                <!--
                 <jvmarg value="-Dcom.sun.management.jmxremote"/>
+                -->
                 <!-- the -D_foo makes sure that an empty line is not used if ${vmarg} is not set
                 as this breaks things on linux with ant 1.6.5 -->
                 <jvmarg value="-D__foo ${vmarg}"/>
