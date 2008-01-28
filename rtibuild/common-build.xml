@@ -134,6 +134,10 @@ Common build example - new product layout
         <dojar jar="${jar.name}" />
     </target>
     
+    <target name="jar-no-deps" description="Create jar without calling deps" depends="compile-java-no-deps">
+        <dojar jar="${jar.name}" />
+    </target>
+    
     <target name="jar-deps" description="Build all dependency jars" depends="-init">
         <deps target="jar" products="${product.deps}"/>
     </target>
