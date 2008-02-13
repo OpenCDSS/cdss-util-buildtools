@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="rti-setup" default="new-project" basedir=".">
+    
+    <target name="new-project" description="setup a new product ant build and project files">
+        <property name="projects.dir" location="${basedir}/../"/>
+        <input message="Enter name of project" addproperty="project.name"/>
+        <property name="project.dir" location="${projects.dir}/${project.name}"/>
+        <available property="project.exists" file="${project.dir}"/>
+        <fail if="project.exists" message="${project.dir} already exists"/>
+        <echo>Generating project in ${project.dir}</echo>
+        
+        <mkdir dir="${project.dir}"/>
+        <mkdir dir="${project.dir}/nbproject"/>
+        <mkdir dir="${project.dir}/conf"/>
+        <mkdir dir="${project.dir}/src"/>
+        <mkdir dir="${project.dir}/test"/>
+        <mkdir dir="${project.dir}/test/data"/>
+        <mkdir dir="${project.dir}/test/src"/>
+        <mkdir dir="${project.dir}/doc"/>
+        
+        <template src="project-template.xml" dest="nbproject/project.xml"/>
+        <template src="product-template.properties" dest="conf/product.properties"/>
+        <template src="build-template.xml" dest="conf/build.xml"/>
+        <template src="test-build-template.xml" dest="test/build.xml"/>
+        <template src="dot-classpath-template.xml" dest=".classpath"/>
+        <template src="dot-project-template.xml" dest=".project"/>
+        
+    </target>
+    
+    <macrodef name="template">
+        <attribute name="src"/>
+        <attribute name="dest"/>
+        <sequential>
+            <copy tofile="${project.dir}/@{dest}" file="setup/@{src}">
+                <filterset>
+                    <filter token="product.name" value="${project.name}"/>
+                </filterset>
+            </copy>
+        </sequential>
+    </macrodef>
+    
+</project>
