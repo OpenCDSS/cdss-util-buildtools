@@ -10,9 +10,10 @@
         <property name="skip.bootstrap" value="true"/>
     </target>
     
+    <property name="rti.build.home" value="${ant.file.rti-common}/../"/>
     <path id="emma.libs">
-        <pathelement location="${ant.file.rti-common}/../lib/emma.jar" />
-        <pathelement location="${ant.file.rti-common}/../lib/emma_ant.jar" />
+        <pathelement location="${rti.build.home}/lib/emma.jar" />
+        <pathelement location="${rti.build.home}/lib/emma_ant.jar" />
     </path>
     <taskdef resource="emma_ant.properties" classpathref="emma.libs" />
     
@@ -30,10 +31,10 @@
         -->
         <property file="${user.home}/.rtibuild.properties"/>
         <property file="conf/product-user.properties" />
-	<condition property="os.properties" value="unix.properties">
-	    <os family="unix"/>
-	</condition>
-	<property file="${ant.file.rti-common}/../conf/${os.properties}"/>
+        <condition property="os.properties" value="unix.properties">
+            <os family="unix"/>
+        </condition>
+        <property file="${rti.build.home}/conf/${os.properties}"/>
         <property file="conf/product.properties" />
         
         <basename property="product.dir.name" file="${basedir}"/>
@@ -81,6 +82,9 @@
         <property name="product.name" value="" description="The name of the product"/>
         <requireprop name="product.version" />
         <property name="product.version" value="" description="The version of the product"/>
+        
+        <!-- common jars -->
+        <property name="junit.jar" value="${rti.build.home}/lib/junit-3.8.1.jar"/>
     </target>
     
     <target name="-init-plugins">
