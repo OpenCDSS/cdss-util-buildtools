@@ -8,6 +8,10 @@
         <property name="install.dir" value="${dist.dir}/install"/>
     </target>
     
+    <target name="clean-install" description="clean local installation" depends="-init">
+        <delete failonerror="false" dir="${dist.dir}/install"/>
+    </target>
+    
     <target name="local-install" description="build local installation" depends="-init,-init-deps,-init-installer,jar-deps,jar-no-deps,-install-jre">
         <standard-local-install installDir="${install.dir}"/>
         <antcall target="generate-license" inheritall="true"/>
