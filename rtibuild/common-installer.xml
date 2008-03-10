@@ -31,8 +31,9 @@
         <genlicense owner="${license.owner}" type="${license.type}"/>
     </target>
     
-    <target name="-local-install" depends="-standard-local-install,-install-jre,install-license"/>
+    <target name="-local-install" depends="-standard-local-install,-install-jre,install-license,-install-local"/>
         
+    <target name="-install-local" description="hook for implementors"/>
         
     <target name="-standard-local-install">
         <standard-local-install installDir="${install.dir}"/>
