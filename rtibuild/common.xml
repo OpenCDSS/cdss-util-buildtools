@@ -65,7 +65,6 @@
         <property name="jar.extra.includes" value="" description="A list of includes to use for adding to jars"/>
         <property name="jar.excludes" value="" description="A list of excludes for jar building"/>
         <property name="default.jar.excludes" value="**/*.svn,${jar.excludes}" description="The default excludes - do not change this - instead change jar.excludes"/>
-        <property name="install.dir" value="${dist.dir}/install" description="The location of a local install"/>
         
         <!-- computed properties-->
         <property name="jar.includes" value="**/*.png,**/*.gif,**/*.jpg,**/*.class/,**/*.properties,META-INF/**/*,${jar.extra.includes}" />
