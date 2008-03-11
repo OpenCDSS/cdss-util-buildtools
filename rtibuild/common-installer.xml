@@ -1,6 +1,6 @@
 <!-- These targets are used by netbeans ide -->
 <project name="rti-common-installer" default="-fail">
-    <import file="common.xml"/>
+    <import file="common-build.xml"/>
     
     <target name="-init-installer" depends="-init-deps">
         <property name="preferred.heap.size" value="256m" description="preferred vm heap size for exe launcher"/>
@@ -10,8 +10,8 @@
     
     <target name="local-install" description="build local installation" depends="jar-deps,jar-no-deps,-local-install"/>
 
-    <target name="clean-install" description="clean local installation" depends="-init">
-        <delete failonerror="false" dir="${dist.dir}/install"/>
+    <target name="clean-install" description="clean local installation" depends="-init-installer">
+        <delete failonerror="false" dir="${install.dir}"/>
     </target>
     
     <target name="local-install-no-build" description="build local installation" depends="-local-install"/>
@@ -31,7 +31,7 @@
         <genlicense owner="${license.owner}" type="${license.type}"/>
     </target>
     
-    <target name="-local-install" depends="-standard-local-install,-install-jre,install-license,-install-local"/>
+    <target name="-local-install" depends="-init-installer,-standard-local-install,-install-jre,install-license,-install-local"/>
         
     <target name="-install-local" description="hook for implementors"/>
         
@@ -102,6 +102,7 @@
             <mkdir dir="@{installDir}/bin"/>
             <mkdir dir="@{installDir}/doc"/>
             <mkdir dir="@{installDir}/system"/>
+            <mkdir dir="@{installDir}/logs"/>
             
             <collectjars refid="collected.jar.files" excludes="${product.disabled.jars}"/>
             <copy todir="@{installDir}/bin" flatten="true">
