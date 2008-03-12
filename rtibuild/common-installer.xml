@@ -111,6 +111,54 @@
         </sequential>
     </macrodef>
     
+    <macrodef name="launch4j-exe">
+        <attribute name="destDir" default="${dist.dir}/install/bin"/>
+        <attribute name="exe" default="${product.name}-${product.version}"/>
+        <attribute name="exeVersion" default="0.0.0.0"/>
+        <attribute name="mainClass" default="${java.main.class}"/>
+        <attribute name="productIcon" default="${product.icon}"/>
+        <attribute name="preferredHeapSize" default="${preferred.heap.size}"/>
+        <attribute name="jreName"/>
+        <element name="opts" optional="true"/>
+        <element name="args" optional="true"/>
+        <sequential>
+            <echoxml file="${dist.dir}/launch4j.xml">
+                <launch4jConfig>
+                    <headerType>0</headerType>
+                    <outfile>@{exe}.exe</outfile>
+                    <jar>${jar.name}</jar>
+                    <dontWrapJar>true</dontWrapJar>
+                    <icon>@{productIcon}</icon>
+                    <args/>
+		    <classPath>
+			<mainClass>@{mainClass}</mainClass>
+			<cp>%EXEDIR%/*.jar</cp>	
+		    </classPath>
+                    <jre>
+                        <path>..\\jre_@{jreName}</path>
+                        <opts/>
+                    </jre>
+                    <versionInfo>
+                        <fileVersion>@{exeVersion}</fileVersion>
+                        <txtFileVersion>${product.version}</txtFileVersion>
+                        <fileDescription>${product.name}</fileDescription>
+                        <copyright>Exists</copyright>
+                        <productVersion>@{exeVersion}</productVersion>
+                        <txtProductVersion>${product.version}</txtProductVersion>
+                        <productName>${product.name}</productName>
+                        <companyName>RTi</companyName>
+                        <internalName>${product.name}</internalName>
+                        <originalFilename>@{exe}.exe</originalFilename>
+                    </versionInfo>
+                </launch4jConfig>
+            </echoxml>
+            <property name="launch4j.dir" location="${rti.build.home}/lib/launch4j" />
+            <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
+    classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
+            <launch4j configFile="${dist.dir}/launch4j.xml"/>
+        </sequential>
+    </macrodef>
+    
     <macrodef name="make-exe" description="create an executable">
         <attribute name="destDir" default="${dist.dir}/install/bin"/>
         <attribute name="exe" default="${product.name}-${product.version}"/>
