@@ -5,7 +5,7 @@
         <property name="projects.dir" location="${basedir}/../"/>
         <input message="Enter name of project" addproperty="project.name"/>
         <property name="project.dir" location="${projects.dir}/${project.name}"/>
-        <available property="project.exists" file="${project.dir}"/>
+        <available property="project.exists" file="${project.dir}/nbproject"/>
         <fail if="project.exists" message="${project.dir} already exists"/>
         <echo>Generating project in ${project.dir}</echo>
         
