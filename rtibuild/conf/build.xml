@@ -6,6 +6,9 @@
     
     <target name="jar" description="create build tools" depends="-init-props,-init-javac">
         <javacompile src="${src.dir}" dest="${build.dir}" cp="${build.classpath}"/>
+        <copy todir="${build.dir}">
+            <fileset dir="${src.dir}" includes="${jar.includes}" excludes="${default.jar.excludes}" />
+        </copy>
         <dojar jar="${jar.name}">
             <atts>
                 <attribute name="Premain-Class" value="rti.agent.ReloadAgent"/>
