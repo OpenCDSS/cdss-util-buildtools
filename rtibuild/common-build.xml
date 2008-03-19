@@ -152,12 +152,8 @@ Common build example - new product layout
         <nsisinstaller nsi="${nsis.file}"/>
     </target>
     
-    <target name="clean-and-build-local-install" description="clean and build local install" depends="clean-local-install,local-install"/>
+    <target name="clean-and-build-local-install" description="clean and build local install" depends="clean-install,local-install"/>
         	
-    <target name="clean-local-install" description="delete local install">
-        <delete dir="${install.dir}" quiet="true" />
-    </target>
-    
     <target name="-pre-installer" description="Hook to execute before installer"/>
     <target name="-post-installer" description="Hook to execute after installer"/>
     
