@@ -128,6 +128,7 @@
                     <outfile>@{exe}.exe</outfile>
                     <jar>${jar.name}</jar>
                     <dontWrapJar>true</dontWrapJar>
+	            <customProcName>true</customProcName>
                     <icon>@{productIcon}</icon>
                     <args/>
 		    <classPath>
