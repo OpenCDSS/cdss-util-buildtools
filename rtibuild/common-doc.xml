@@ -7,11 +7,14 @@
 <target name="mergePDF" description="Merges multiple PDF files into one" >
 
 	<!-- depends on the following variables being set 
-		 pdf_file - the name of the final (merged) PDF to create, with .pdf extension
+		 pdf_file - the pathname of the final (merged) PDF to create, with .pdf extension
+		 pdfsrc.dir - the folder from which filelist PDF files are located
 		 filelist - File that contains the list and ordering of PDF input files to be merged.
+		      The PDF files listed should not contain a leading path because the file names
+		      are shown in the bookmarks of the final PDF.
 	-->
 
-	<exec executable="${rti.build.home}/lib/pdfmerge/PMCMD.exe" dir="${basedir}">
+	<exec executable="${rti.build.home}/lib/pdfmerge/PMCMD.exe" dir="${pdfsrc.dir}">
 		<arg value="${pdf_file}" />
 		<!-- List of files to merge -->
 		<arg value="-F${filelist}" />

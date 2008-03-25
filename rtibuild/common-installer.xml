@@ -4,6 +4,7 @@
     
     <target name="-init-installer" depends="-init-deps">
         <property name="preferred.heap.size" value="256m" description="preferred vm heap size for exe launcher"/>
+    	<property name="exeVersion" value="0.0.0.0" description="default version for installer exe"/>
         <fail unless="dist.dir"/>
         <property name="install.dir" value="${dist.dir}/install"/>
     </target>
@@ -114,7 +115,7 @@
     <macrodef name="launch4j-exe">
         <attribute name="destDir" default="${dist.dir}/install/bin"/>
         <attribute name="exe" default="${product.name}-${product.version}"/>
-        <attribute name="exeVersion" default="0.0.0.0"/>
+        <attribute name="exeVersion" default="${exeVersion}"/>
         <attribute name="mainClass" default="${java.main.class}"/>
         <attribute name="productIcon" default="${product.icon}"/>
         <attribute name="preferredHeapSize" default="${preferred.heap.size}"/>
