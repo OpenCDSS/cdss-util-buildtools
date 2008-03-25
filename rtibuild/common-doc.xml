@@ -1,15 +1,18 @@
 <project name="common-doc">
+	
+	<import file="common.xml"/>
+
+<!-- Common ant code to support building software documentation. -->
 
 <target name="mergePDF" description="Merges multiple PDF files into one" >
 
 	<!-- depends on the following variables being set 
-		 proj_name - The projects (product) name
-		 filelist - File that contains the list and ordering
-		            of files to be merged.
+		 pdf_file - the name of the final (merged) PDF to create, with .pdf extension
+		 filelist - File that contains the list and ordering of PDF input files to be merged.
 	-->
 
-	<exec executable="S:/DEVELOP/A-PDF Merger Command Line/bin/PMCMD.exe" >
-		<arg value="dist/${proj_name}.pdf" />
+	<exec executable="${rti.build.home}/lib/pdfmerge/PMCMD.exe" dir="${basedir}">
+		<arg value="${pdf_file}" />
 		<!-- List of files to merge -->
 		<arg value="-F${filelist}" />
 		<!-- Create Bookmarks -->
@@ -17,7 +20,7 @@
 		<!-- insert page numbers -->
 		<arg value="-NSTYLE=[0]" />
 		<!-- Create Table of Contents -->
-		<arg value="-TLEVEL=1,LEVELSIZE1=10,LEVELCOLOR1=993333,TEMPLATE=S:/DEVELOP/A-PDF Merger Command Line/bin/Table_of_Contents.pdf,TOP=2,PAGE=3" />
+		<arg value="-TLEVEL=1,LEVELSIZE1=10,LEVELCOLOR1=993333,TEMPLATE=${rti.build.home}/lib/pdfmerge/Table_of_Contents.pdf,TOP=2,PAGE=3" />
 		<!-- Opens the document with bookmark pane visible -->
 		<arg value="-VOPENSHOW=bookmark" />
 	</exec>
