@@ -24,14 +24,14 @@ def output(lines):
 def findStatus(dir,path):
   """Check if the status of the item 'path' in the directory 'dir'
   is anything but uptodate. Returns the status character for the path"""
-  for line in svn("status -N",dir):
+  for line in svn("status","-N",dir):
     tokens = line.split()
     if tokens[1] == path:
       return tokens[0]
 
 def dirdiff(dir):
   """Perform a svn diff -N on 'dir' returning the output as a list""" 
-  return svn("diff -N",dir)
+  return svn("diff","-N",dir)
 
 def debug(*s):
   if _debug:
@@ -40,11 +40,11 @@ def debug(*s):
 def svn(*args):
   """Run some svn command, returning all output lines stripped of
   ending newline and excluding any blank output"""
-  cmd = "svn %s" % " ".join(filter(lambda a: '"%s"' % a,args))
+  cmd = "svn %s" % " ".join(map(lambda a: '"%s"' % a,args))
   p = os.popen(cmd)
   output = filter(lambda line: len(line) and line or None, (i[:-1] for i in p))
   if p.close():
-    raise Exception("Error")
+    raise Exception("Error '" + cmd + "'")
   return output
 
 def makedict(lines,split=None):
@@ -60,7 +60,7 @@ def makedict(lines,split=None):
 
 def getExternals(productDir):
   """Return a list of externals for a directory"""
-  return makedict(svn("propget svn:externals",productDir))
+  return makedict(svn("propget","svn:externals",productDir))
 
 def svnInfo(dir):
   """Return a dict of svn info on the given directory"""
@@ -91,7 +91,7 @@ def locateTags(externals):
 
 def makeTag(src,dest,message):
   """Create a tag in the repository 'dest', copying from 'src'"""
-  svn("copy -m",message,src,dest +"/" + tag)
+  svn("copy","-m",message,src,dest)
   
 
 def tagExternals(externals,tag,message,dry):
@@ -106,9 +106,8 @@ def tagExternals(externals,tag,message,dry):
     if dry: print "would tag the following :"
     for local,remote in externals.items():
       fulltag = tags[local] + "/" + local + "-" + tag
-      if dry:
-        print remote + " -> " + fulltag
-      else :
+      print remote + " -> " + fulltag
+      if not dry:
         makeTag(remote,fulltag,message)
 
 def promptForCommitMessage():
