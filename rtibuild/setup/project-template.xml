@@ -9,7 +9,7 @@
                 <property-file>${user.home}/.rtibuild.properties</property-file>
                 <property-file>conf/product-user.properties</property-file>
                 <property-file>conf/product.properties</property-file>
-                <property name="ant.script">conf/build.xml</property>
+                <property name="ant.script">nbproject/build.xml</property>
             </properties>
             <folders>
                 <source-folder>
@@ -25,32 +25,37 @@
             </folders>
             <ide-actions>
                 <action name="build">
-                    <script>conf/build.xml</script>
-                    <target>jar</target>
+                    <script>${ant.script}</script>
+                    <target>build</target>
                 </action>
                 <action name="Compile">
-                    <script>conf/build.xml</script>
-                    <target>compile-java-no-deps</target>
-                    <property name="fork.javac">false</property>
+                    <script>${ant.script}</script>
+                    <target>compile</target>
+                    <property name="fork.javac">false
+                    </property>
                 </action>
                 <action name="clean">
-                    <script>conf/build.xml</script>
+                    <script>${ant.script}</script>
                     <target>clean</target>
                 </action>
+                <action name="Jar">
+                    <script>${ant.script}</script>
+                    <target>jar</target>
+                </action>
                 <action name="javadoc">
-                    <script>conf/build.xml</script>
+                    <script>${ant.script}</script>
                     <target>javadoc</target>
                 </action>
                 <action name="run">
-                    <script>conf/build.xml</script>
+                    <script>${ant.script}</script>
                     <target>run</target>
                 </action>
                 <action name="test">
-                    <script>conf/build.xml</script>
-                    <target>test-product</target>
+                    <script>${ant.script}</script>
+                    <target>test</target>
                 </action>
                 <action name="test.single">
-                    <script>conf/build.xml</script>
+                    <script>${ant.script}</script>
                     <target>-test-single</target>
                     <property name="test.type"/>
                     <context>
@@ -64,12 +69,11 @@
                     </context>
                 </action>
                 <action name="rebuild">
-                    <script>conf/build.xml</script>
-                    <target>clean</target>
-                    <target>compile-java-no-deps</target>
+                    <script>${ant.script}</script>
+                    <target>build</target>
                 </action>
                 <action name="compile.single">
-                    <script>conf/build.xml</script>
+                    <script>${ant.script}</script>
                     <target>-compile-selected</target>
                     <context>
                         <property>files</property>
@@ -82,10 +86,12 @@
                     </context>
                 </action>
                 <action name="run.single">
-                    <script>conf/build.xml</script>
+                    <script>${ant.script}</script>
                     <target>-run-selected-file</target>
-                    <property name="use.reload.agent">false</property>
-                    <property name="fork.javac">false</property>
+                    <property name="use.reload.agent">false
+                    </property>
+                    <property name="fork.javac">false
+                    </property>
                     <context>
                         <property>files</property>
                         <folder>src</folder>
@@ -97,10 +103,12 @@
                     </context>
                 </action>
                 <action name="debug.single">
-                    <script>conf/build.xml</script>
+                    <script>${ant.script}</script>
                     <target>-debug-selected-files</target>
-                    <property name="use.reload.agent">false</property>
-                    <property name="fork.javac">false</property>
+                    <property name="use.reload.agent">false
+                    </property>
+                    <property name="fork.javac">false
+                    </property>
                     <context>
                         <property>classname</property>
                         <folder>src</folder>
@@ -112,15 +120,11 @@
                     </context>
                 </action>
                 <action name="Reload">
-                    <script>conf/build.xml</script>
+                    <script>${ant.script}</script>
                     <target>-redefine</target>
                 </action>
-                <action name="Clean.Tests">
-                    <script>conf/build.xml</script>
-                    <target>-clean-tests</target>
-                </action>
                 <action name="debug.test.single">
-                    <script>conf/build.xml</script>
+                    <script>${ant.script}</script>
                     <target>-debug-test-single</target>
                     <property name="test.type"/>
                     <context>
@@ -134,7 +138,7 @@
                     </context>
                 </action>
                 <action name="compile.single">
-                    <script>conf/build.xml</script>
+                    <script>${ant.script}</script>
                     <target>-compile-selected-test</target>
                     <context>
                         <property>files</property>
@@ -184,7 +188,8 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">${build.classpath}</classpath>
+                <classpath mode="compile">${build.classpath}
+                </classpath>
                 <built-to>${build.dir}</built-to>
                 <built-to>${jar.file}</built-to>
                 <source-level>1.5</source-level>
@@ -192,7 +197,8 @@
             <compilation-unit>
                 <package-root>test/src</package-root>
                 <unit-tests/>
-                <classpath mode="compile">${test.classpath}</classpath>
+                <classpath mode="compile">${test.classpath}
+                </classpath>
                 <built-to>${test.build.dir}</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>

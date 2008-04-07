@@ -3,36 +3,66 @@
     <import file="common-build.xml"/>
     
     <target name="-init-installer" depends="-init-deps">
+        <property name="nsis.file" value="${product.name}.nsi" description="the nsis file to use for creating an installer"/>
         <property name="preferred.heap.size" value="256m" description="preferred vm heap size for exe launcher"/>
-    	<property name="exeVersion" value="0.0.0.0" description="default version for installer exe"/>
-        <fail unless="dist.dir"/>
-        <property name="install.dir" value="${dist.dir}/install"/>
+        <property name="install.name" value="install" description="the name of the local install folder within the dist directory"/>
+        <property name="install.dir" value="${dist.dir}/${install.name}" description="the location of the local-install"/>
+        <property name="exe.version" value="${product.version}" description="the n.n.n.n version to place in the exe file"/>
+        <property name="license.file" value="" description="if set, the license file to copy into local install"/>
+        <property name="exe.jre" value="${java.target.version}" description="the name of the jre version (142,150) for install"/>
+        <!-- no built-in support for portable exe building yet -->
+        <property name="jre.base.dir" value="s:/DEVELOP" description="the directory to look for jre in"/>
+        <property name="jre.install.src.dir" value="${jre.base.dir}/jre_${exe.jre}"/>
+        <isPropertySet name="license.file"/>
+        <isPropertySet name="java.main.class"/>
     </target>
     
-    <target name="local-install" description="build local installation" depends="jar-deps,jar-no-deps,-local-install"/>
+    <target name="exe" description="generate an executable using launch4j" depends="-init-installer">
+        <launch4j-exe/>
+    </target>
+    
+    <target name="installer" description="Create an nsis installer for this product" depends="-init,-pre-installer,local-install,-post-installer">
+        <nsisinstaller nsi="${nsis.file}"/>
+    </target>
+    
+    <target name="installer-no-deps" description="Create nsis an installer - does not do any prep" depends="-init">
+        <nsisinstaller nsi="${nsis.file}"/>
+    </target>
+    
+    <target name="clean-and-build-local-install" description="clean and build local install" depends="clean-install,local-install"/>
+    
+    <target name="-clean-logs" description="clean log directories before installer">
+        <delete dir="${install.dir}/logs" includes="*" failonerror="false"/>
+    </target>
+    
+    <target name="-pre-installer" depends="-clean-logs" description="Hook to execute before installer"/>
+    <target name="-post-installer" description="Hook to execute after installer"/>
+    
+    <target name="local-install" description="build local installation" depends="jar-deps,-local-install,exe"/>
+    <target name="local-install-no-deps" description="build local installation" depends="jar-no-deps,-local-install"/>
 
     <target name="clean-install" description="clean local installation" depends="-init-installer">
         <delete failonerror="false" dir="${install.dir}"/>
     </target>
     
-    <target name="local-install-no-build" description="build local installation" depends="-local-install"/>
+    <target name="local-install-no-build" description="do local install without building" depends="-local-install"/>
     
-    <target name="-install-jre" depends="-init" if="jre.install.dest.dir">
-        <fail unless="jre.install.dest.dir" message="You must define the name of the jre destination directory"/>
-        <fail unless="jre.install.src.dir" message="You must define the path to the jre used for installation"/>
-        <mkdir dir="${install.dir}/${jre.install.dest.dir}"/>
-        <copy failonerror="false" todir="${install.dir}/${jre.install.dest.dir}"><fileset dir="${jre.install.src.dir}"/></copy>
+    <target name="-install-jre" depends="-init-installer">
+        <mkdir dir="${install.dir}/jre_${exe.jre}"/>
+        <copy failonerror="false" todir="${install.dir}/jre_${exe.jre}">
+            <fileset dir="${jre.install.src.dir}"/>
+        </copy>
     </target>
     
     <target name="install-license" description="perform license installation" depends="generate-license,-install-license"/>
     
-    <target name="generate-license" unless="license.file" depends="-bootstrap-cipher" description="Generate a license file">
+    <target name="generate-license" unless="license.file.isset" depends="-bootstrap-cipher" description="Generate a license file">
         <fail unless="license.owner" message="Must define 'license.owner' property"/>
         <fail unless="license.type" message="Must define 'license.type' property"/>
         <genlicense owner="${license.owner}" type="${license.type}"/>
     </target>
     
-    <target name="-local-install" depends="-init-installer,-standard-local-install,-install-jre,install-license,-install-local"/>
+    <target name="-local-install" depends="-init-installer,-standard-local-install,-standard-exe,-install-jre,install-license,-install-local"/>
         
     <target name="-install-local" description="hook for implementors"/>
         
@@ -40,55 +70,22 @@
         <standard-local-install installDir="${install.dir}"/>
     </target>
     
-    <target name="-install-license" if="license.file">
+    <target name="-install-license" if="license.file.isset">
         <copy failonerror="true" todir="${install.dir}/system" file="${license.file}"/>
+    </target>
+    
+    <target name="-standard-exe" if="java.main.class.isset">
+        <condition property="java.min.version" value="1.4.2">
+            <equals arg1="${java.target.version}" arg2="142"/>
+        </condition>
+        <condition property="java.min.version" value="1.5.0">
+            <equals arg1="${java.target.version}" arg2="150"/>
+        </condition>
+        <launch4j-exe/>
     </target>
     
     <target name="-bootstrap-cipher" depends="-init">
         <ant antfile="${rtibuild.dir}/externals/RTiCipher/conf/build.xml" dir="${rtibuild.dir}/externals/RTiCipher" target="jar"/>
-    </target>
-    
-    <target name="generate-launcher-script" description="Generate a launcher script for this product" depends="-init-deps,-init-java">
-        <mkdir dir="scripts"/>
-        <property name="script.name" value="scripts/run" />
-        <available property="script.exists" file="${script.name}" />
-        <pathconvert property="cygpath" targetos="windows">
-            <path path="${run.classpath.computed}" />
-        </pathconvert>
-        <fail if="script.exists" message="I'm not going to overwrite the existing script" />
-        <filter token="cygpath" value="${cygpath}"/>
-        <filter token="java.exe" value="${java.exe}"/>
-        <filter token="run.classpath.computed" value="${run.classpath.computed}"/>
-        <copy file="${ant.file.rti-common-build}/../run.template" tofile="${script.name}" filtering="true"/>
-        <chmod perm="u+x" file="${script.name}" />
-    </target>
-    
-    <target name="generate-main-launcher" description="Generate a launcher script for this product" depends="-init-deps,-init-java">
-        <requireprop name="java.main.class"/>
-        <mkdir dir="scripts"/>
-        <property name="script.name" value="scripts/${product.name}.bat" />
-        <available property="script.exists" file="${script.name}" />
-        <collectjars useBuildDirs="false" excludes="${product.disabled.jars}"/>
-        <fail if="launcher.vm.args.safe" message="don't set launcher.vm.args.safe"/>
-        <condition property="launcher.vm.args.safe" value="">
-            <not><isset property="launcher.vm.args"/></not>
-        </condition>
-        <property name="launcher.vm.args.safe" value="${launcher.vm.args}"/>
-        <pathconvert property="launchpath" targetos="windows">
-            <path path="${collected.jar.deps}"/>
-            <path location="${jar.name}"/>
-            <chainedmapper>
-                <mapper type="flatten"/>
-                <mapper type="glob" from="*.jar" to="%HOMED%\bin\*.jar"/>
-            </chainedmapper>
-        </pathconvert>
-        <echo file="${script.name}">
-            SET HOMED=\${product.name}
-            SET JREHOMED=%HOMED%\jre_150
-            SET VMARGS=-D${product.name}.home="%HOMED%"
-            SET CLASSPATH="${launchpath}"
-            "%JREHOMED%\bin\java" -Xmx256m %VMARGS% ${launcher.vm.args.safe} -cp %CLASSPATH% ${java.main.class}
-        </echo>
     </target>
     
     <macrodef name="standard-local-install" description="perform a local install for a 'standard' app">
@@ -113,24 +110,29 @@
     </macrodef>
     
     <macrodef name="launch4j-exe">
-        <attribute name="destDir" default="${dist.dir}/install/bin"/>
-        <attribute name="exe" default="${product.name}-${product.version}"/>
-        <attribute name="exeVersion" default="${exeVersion}"/>
+        <attribute name="destDir" default="${install.dir}/bin"/>
+        <attribute name="exe" default="${product.name}"/>
+        <attribute name="exeVersion" default="${exe.version}"/>
         <attribute name="mainClass" default="${java.main.class}"/>
+        <!-- product.icon is specified with respect to root directory,
+        but launch4j-exe runs in dist -->
         <attribute name="productIcon" default="${product.icon}"/>
+        <attribute name="jreName" default="${exe.jre}"/>
         <attribute name="preferredHeapSize" default="${preferred.heap.size}"/>
-        <attribute name="jreName"/>
+        <attribute name="minVersion" default="1.4.2"/>
         <element name="opts" optional="true"/>
         <element name="args" optional="true"/>
         <sequential>
+            <property name="full.icon.path" location="@{productIcon}"/>
+            <echo>@{exeVersion}</echo>
             <echoxml file="${dist.dir}/launch4j.xml">
                 <launch4jConfig>
                     <headerType>0</headerType>
                     <outfile>@{exe}.exe</outfile>
                     <jar>${jar.name}</jar>
+                    <customProcName>true</customProcName>
                     <dontWrapJar>true</dontWrapJar>
-	            <customProcName>true</customProcName>
-                    <icon>@{productIcon}</icon>
+                    <icon>${full.icon.path}</icon>
                     <args/>
 		    <classPath>
 			<mainClass>@{mainClass}</mainClass>
@@ -138,6 +140,7 @@
 		    </classPath>
                     <jre>
                         <path>..\\jre_@{jreName}</path>
+                        <minVersion>@{minVersion}</minVersion>
                         <opts/>
                     </jre>
                     <versionInfo>
@@ -158,28 +161,8 @@
             <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
     classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
             <launch4j configFile="${dist.dir}/launch4j.xml"/>
-        </sequential>
-    </macrodef>
-    
-    <macrodef name="make-exe" description="create an executable">
-        <attribute name="destDir" default="${dist.dir}/install/bin"/>
-        <attribute name="exe" default="${product.name}-${product.version}"/>
-        <attribute name="mainClass" default="${java.main.class}"/>
-        <attribute name="productIcon" default="${product.icon}"/>
-        <attribute name="preferredHeapSize" default="${preferred.heap.size}"/>
-        <attribute name="jreName"/>
-        <sequential>
-            <!-- @todo FIX ME -->
-            <copy failonerror="false" file="${ant.file.rti-common-build}/../lib/winrun4j.exe" tofile="@{destDir}/@{exe}.exe"/>
-            <chmod file="@{destDir}/@{exe}.exe" perm="ugo+rx"/>
-            <echo file="@{destDir}/@{exe}.ini">classpath.1=bin/*.jar
-                main.class=@{mainClass}
-                vm.location=../@{jreName}/bin/client/jvm.dll
-                vmarg.1=-Dcom.sun.management.jmxremote
-                vmarg.2=-ea
-                vm.heapsize.preferred=@{preferredHeapSize}
-                working.directory=..
-            </echo>
+            <move file="${dist.dir}/@{exe}.exe" todir="@{destDir}"/>
+            <delete file="${dist.dir}/launch4j.xml"/>
         </sequential>
     </macrodef>
     
@@ -200,7 +183,7 @@
         <attribute name="expirationUnit" default="month"/>
         <attribute name="product" default="${product.name}"/>
         <attribute name="count" default="NoLimit"/>
-        <attribute name="outfile" default="${dist.dir}/install/system/@{product}.cfg"/>
+        <attribute name="outfile" default="${install.dir}/system/@{product}.cfg"/>
         <attribute name="append" default="false"/>
         <attribute name="owner"/>
         <attribute name="type"/>

@@ -1,9 +1,16 @@
-<!-- These targets are used by netbeans ide -->
+<!-- These targets are used by netbeans ide 
+
+This file should be imported by a build file that lives in the nbproject
+directory. The project.xml file located there directs the IDE to call
+these targets.
+
+-->
 <project name="rti-common-nb" default="-fail">
     
     <import file="common-build.xml"/>
     
-    <target name="-run-selected-file" depends="-init-deps,compile-java-no-deps,-init-java">
+    <target name="-run-selected-file" depends="-init-deps,compile-nodeps,-init-java"
+    description="Netbeans target">
         <fail unless="files">Must set property 'files'</fail>
         <condition property="agentargs" value="${rtibuild.dir}/project/dist/rtibuild_1_0.jar" else="">
             <istrue value="${use.reload.agent}"/>
@@ -26,36 +33,23 @@
         </runjava>
     </target>
     
-    <target name="-compile-selected" depends="-init-javac">
+    <target name="-compile-selected" depends="-init-javac" description="Netbeans target">
         <fail unless="files">Must set property 'files'</fail>
         <javacompile includes="${files}" src="${src.dir}" dest="${build.dir}" cp="${build.classpath}" fork="false" />
     </target>
     
-    <target name="-compile-selected-test" depends="-init-javac">
+    <target name="-compile-selected-test" depends="-init-javac" description="Netbeans target">
         <fail unless="files">Must set property 'files'</fail>
         <javacompile includes="${files}" src="test/src" dest="test/bin" cp="${test.classpath}" fork="false" />
     </target>
     
-    <target name="-redefine" depends="-init">
+    <target name="-redefine" depends="-init" description="Netbeans target">
         <taskdef name="redefine" classpath="${rtibuild.dir}/project/dist/rtibuild_1_0.jar" classname="rti.build.ant.ReloadTask"/>
         <collectproducts/>
         <redefine projectDeps="${collected.product.deps}"/>
     </target>
     
-    <target name="profile" description="Profile Project" depends="-init-deps,compile-java">
-        <fail unless="netbeans.home">This target can only run inside the NetBeans IDE.</fail>
-        <nbprofiledirect>
-            <classpath> 
-                <path path="${run.classpath.computed}"/>
-            </classpath>
-        </nbprofiledirect>
-        <java jvm="${profiler.info.jvm}" fork="true" classname="${profile.class}" classpath="${run.classpath.computed}">
-            <jvmarg value="${profiler.info.jvmargs.agent}"/>
-            <jvmarg line="${profiler.session.jvm.args}"/>
-        </java>
-    </target>
-    
-    <target name="-debug-selected-files" depends="-init-deps,-init-java" if="netbeans.home" description="Debug a Single File">
+    <target name="-debug-selected-files" depends="-init-deps,-init-java" if="netbeans.home" description="Netbeans target">
         <fail unless="classname">Must set property 'classname'</fail>
         <pathconvert property="src.paths">
             <chainedmapper>
@@ -80,11 +74,11 @@
         </runjava>
     </target>
     
-    <target name="-debug-test-single" depends="-init-java">
+    <target name="-debug-test-single" depends="-init-java" description="Netbeans target">
         <ant antfile="${test.dir}/build.xml" target="-debug-test-single"/>
     </target>
     
-    <target name="-test-single" depends="-init-java,compile-java-no-deps">
+    <target name="-test-single" depends="-init-java,compile-nodeps" description="Netbeans target">
         <ant antfile="${test.dir}/build.xml" target="-test-single"/>
     </target>
     

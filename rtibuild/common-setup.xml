@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+Setup a new product, creating directories, build and properties stubs
+
+Don't import this, call it instead.
+-->
 <project name="rti-setup" default="new-project" basedir=".">
     
     <target name="new-project" description="setup a new product ant build and project files">
@@ -19,6 +24,7 @@
         <mkdir dir="${project.dir}/doc"/>
         
         <template src="project-template.xml" dest="nbproject/project.xml"/>
+        <template src="nbproject-build-template.xml" dest="nbproject/build.xml"/>
         <template src="product-template.properties" dest="conf/product.properties"/>
         <template src="build-template.xml" dest="conf/build.xml"/>
         <template src="test-build-template.xml" dest="test/build.xml"/>

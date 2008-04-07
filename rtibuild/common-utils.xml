@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="rti-utils" default="all" basedir=".">
+    
+    <!-- home for targets not always used -->
+    
+    <import file="common.xml"/>
+    
+    <target name="onejar" description="Create single jar from all deps" depends="-init-deps,compile">
+        <deps target="jar" products="${product.deps}"/>
+        <taskdef name="collectjars" classpath="${rtibuild.dir}/dist/rtibuild_1_0.jar" classname="rti.build.ant.CollectJarDependencies"/>
+        <collectjars separator=","/>
+        <dojar jar="${jar.name}">
+            <zipfiles>
+                <zipgroupfileset dir=".." includes="${collected.jar.deps}"/>
+            </zipfiles>
+        </dojar>
+    </target>
+    
+    <target name="generate-launcher-script" description="Generate a launcher script for this product" depends="-init-deps,-init-java">
+        <mkdir dir="scripts"/>
+        <property name="script.name" value="scripts/run" />
+        <available property="script.exists" file="${script.name}" />
+        <pathconvert property="cygpath" targetos="windows">
+            <path path="${run.classpath.computed}" />
+        </pathconvert>
+        <fail if="script.exists" message="I'm not going to overwrite the existing script" />
+        <filter token="cygpath" value="${cygpath}"/>
+        <filter token="java.exe" value="${java.exe}"/>
+        <filter token="run.classpath.computed" value="${run.classpath.computed}"/>
+        <copy file="${ant.file.rti-common-build}/../run.template" tofile="${script.name}" filtering="true"/>
+        <chmod perm="u+x" file="${script.name}" />
+    </target>
+    
+    <target name="generate-main-launcher" description="Generate a launcher script for this product" depends="-init-deps,-init-java">
+        <requireprop name="java.main.class"/>
+        <mkdir dir="scripts"/>
+        <property name="script.name" value="scripts/${product.name}.bat" />
+        <available property="script.exists" file="${script.name}" />
+        <collectjars useBuildDirs="false" excludes="${product.disabled.jars}"/>
+        <fail if="launcher.vm.args.safe" message="don't set launcher.vm.args.safe"/>
+        <condition property="launcher.vm.args.safe" value="">
+            <not><isset property="launcher.vm.args"/></not>
+        </condition>
+        <property name="launcher.vm.args.safe" value="${launcher.vm.args}"/>
+        <pathconvert property="launchpath" targetos="windows">
+            <path path="${collected.jar.deps}"/>
+            <path location="${jar.name}"/>
+            <chainedmapper>
+                <mapper type="flatten"/>
+                <mapper type="glob" from="*.jar" to="%HOMED%\bin\*.jar"/>
+            </chainedmapper>
+        </pathconvert>
+        <echo file="${script.name}">
+            SET HOMED=\${product.name}
+            SET JREHOMED=%HOMED%\jre_150
+            SET VMARGS=-D${product.name}.home="%HOMED%"
+            SET CLASSPATH="${launchpath}"
+            "%JREHOMED%\bin\java" -Xmx256m %VMARGS% ${launcher.vm.args.safe} -cp %CLASSPATH% ${java.main.class}
+        </echo>
+    </target>
+</project>

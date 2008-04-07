@@ -1,17 +1,11 @@
-<!-- 
-================================================================================
-Common build example - new product layout
-================================================================================
-11-21-06 iws
-
-================================================================================
+<!--
+this build should be imported by each products top-level build file that is
+located in conf
 -->
 
 <project name="rti-common-build" default="-fail">
     
     <import file="common.xml"/>
-    <import file="common-nb.xml"/>
-    <import file="common-installer.xml"/>  
     
     <target name="-init-build" depends="-init">
         <property name="java.main.vmargs" value="" description="VM arguments to pass to java during execution"/>
@@ -19,27 +13,26 @@ Common build example - new product layout
         <property name="java.main.class" value="undefined" description="The main class to run with"/>
         <property name="coverage.dir" location="${test.build.dir}/coverage" description="emma coverage output directory"/>
         <property name="emma.filter" value="rti.*, RTi.*" description="emma includes filter"/>
-        <property name="nsis.file" value="${product.name}.nsi" description="the nsis file to use for creating an installer"/>
     </target>
     
-    <target name="-pre-compile-java"/>
+    <target name="-pre-compile-java" description="hook target for implementors"/>
     
-    <target name="compile-java-no-deps" description="Compile java but set nodeps flag for products with dependencies" depends="-init">
+    <target name="compile-nodeps" description="Compile java but set nodeps flag for products with dependencies" depends="-init">
         <property name="nodeps" value="true"/>
-        <antcall inheritall="true" target="compile-java"/>
+        <antcall inheritall="true" target="compile"/>
     </target>
     
     <target name="-compile-deps" if="product.deps" unless="nodeps">
         <echo level="verbose">compiling deps for ${product.name} : ${product.deps}</echo>
         <collectproducts separator="," property="collected.product.deps"/>
-        <deps target="compile-java" products="${collected.product.deps}"/>
+        <deps target="compile" products="${collected.product.deps}"/>
     </target>
     
     <target name="-compile-java" depends="-init,-pre-compile-java,-init-javac,-compile-deps" >
         <javacompile src="${src.dir}" dest="${build.dir}" cp="${build.classpath}"/>
     </target>
     
-    <target name="compile-java" description="Generic target for compiling java source code" depends="-init,-pre-compile-java,-init-javac,-compile-deps,-compile-java,-emma,-check-tests,-compile-tests" >
+    <target name="compile" description="Compile product and all dependencies, including tests" depends="-init,-pre-compile-java,-init-javac,-compile-deps,-compile-java,-emma,-check-tests,-compile-tests" >
         <echo level="verbose">compiling ${product.name}</echo>
         <copy todir="${build.dir}">
             <fileset dir="${src.dir}" includes="${jar.includes}" excludes="${default.jar.excludes}" />
@@ -56,7 +49,7 @@ Common build example - new product layout
         </copy>
     </target>
     
-    <target name="build-all" depends="real-clean,compile-java"/>
+    <target name="build" depends="clean,compile"/>
     
     <target name="javadoc" description="Target for creating Javadocs" depends="-init,-init-java">
         <mkdir dir="${jdoc.dir}"/>
@@ -68,13 +61,13 @@ Common build example - new product layout
         </javadoc>
     </target>
     
-    <target name="clean" description="Clean class files and jar file" depends="-init">
+    <target name="clean" description="Clean class files and jar file, including tests" depends="-init">
         <delete dir="${build.dir}" quiet="true" />
         <delete file="${dist.dir}/${jar.name}" quiet="true" />
         <delete dir="${test.build.dir}" quiet="true" />
     </target>
     
-    <target name="clean-deps" depends="-init,clean" if="product.deps" description="clean dependencies">
+    <target name="clean-deps" depends="-init,-init-deps,clean" if="product.deps" description="clean with dependencies">
         <taskdef name="collectem" classpath="${rtibuild.dir}/dist/rtibuild_1_0.jar" classname="rti.build.ant.CollectProductDependencies"/>
         <collectproducts separator=","/>
         <deps target="clean" products="${collected.product.deps}"/>
@@ -84,28 +77,24 @@ Common build example - new product layout
         <delete dir="${test.build.dir}" quiet="true" />
     </target>
     
-    <target name="real-clean" description="Clean class files, jars, docs, etc." depends="-init">
+    <target name="clean-all" description="Clean all build products" depends="-init">
         <delete dir="${build.dir}" quiet="true" />
         <delete dir="${jdoc.dir}" quiet="true" />
         <delete dir="${dist.dir}" quiet="true" />
         <delete dir="${test.build.dir}" quiet="true" />
     </target>
     
-    <target name="test" description="Run all tests" depends="-init,-enable-emma">
+    <target name="test" description="Run all tests" depends="-init,-enable-emma,-check-tests">
+        <fail unless="tests.exist" message="No build file exists for this product - create one at ${test.dir}/build.xml"/>
         <ant antfile="${test.dir}/build.xml" target="all-tests" />
-    </target>
-    
-    <target name="test-product" description="Run test project" depends="-init,-enable-emma,compile-java,-check-tests" if="tests.exist">
-        <ant antfile="${test.dir}/build.xml" target="all-tests"/>
     </target>
     
     <target name="-check-tests">
         <available file="${test.dir}/build.xml" property="tests.exist"/>
     </target>
     
-    <target name="test-deps" description="Test all dependencies" depends="-init">
-        <collectproducts separator=","/>
-        <deps target="test-product" products="${collected.product.deps}"/>
+    <target name="test-deps" description="Test with dependencies" depends="-init-deps,test">
+        <deps target="test" products="${collected.product.deps}"/>
     </target>
     
     <target name="-compile-tests" description="foo" depends="-check-tests" if="tests.exist">
@@ -119,43 +108,20 @@ Common build example - new product layout
         </runjava>
     </target>
     
-    <target name="onejar" description="Create single jar from all deps" depends="-init-deps,compile-java">
-        <deps target="jar" products="${product.deps}"/>
-        <taskdef name="collectjars" classpath="${rtibuild.dir}/dist/rtibuild_1_0.jar" classname="rti.build.ant.CollectJarDependencies"/>
-        <collectjars separator=","/>
-        <dojar jar="${jar.name}">
-            <zipfiles>
-                <zipgroupfileset dir=".." includes="${collected.jar.deps}"/>
-            </zipfiles>
-        </dojar>
-    </target>
-    
-    <target name="jar" description="Create product jar from name and version" depends="compile-java">
+    <target name="jar" description="Create product jar from name and version" depends="compile">
         <dojar jar="${jar.name}" />
     </target>
     
-    <target name="jar-no-deps" description="Create jar without calling deps" depends="compile-java-no-deps">
+    <target name="jar-no-deps" description="Create jar without calling deps" depends="compile-nodeps">
         <dojar jar="${jar.name}" />
     </target>
     
     <target name="jar-deps" description="Build all dependency jars" depends="-init">
         <deps target="jar" products="${product.deps}"/>
+        <antcall target="jar-no-deps"/>
     </target>
     
-    <target name="pre-release" description="Complete clean,build, and test" depends="clean-deps,-compile-deps,test-deps,test-product"/>
-    
-    <target name="release" description="Perform complete clean, build, test and package" depends="pre-release" />
-    
-    <target name="dist" description="Perform any distribution related activities" depends="jar" />
-    
-    <target name="installer" description="Create an installer for this product" depends="-pre-installer,jar,-post-installer">
-        <nsisinstaller nsi="${nsis.file}"/>
-    </target>
-    
-    <target name="clean-and-build-local-install" description="clean and build local install" depends="clean-install,local-install"/>
-        	
-    <target name="-pre-installer" description="Hook to execute before installer"/>
-    <target name="-post-installer" description="Hook to execute after installer"/>
+    <target name="pre-release" description="Complete clean,build, and test" depends="clean-deps,compile,test-deps"/>
     
     <target name="-enable-emma" depends="-init-build">
         <property name="emma.enabled" value="true" />
@@ -171,6 +137,19 @@ Common build example - new product layout
                        <filter includes="${emma.filter}"/>
                        </instr>
         </emma>
+    </target>
+    
+    <target name="profile" description="Netbeans profiler target" depends="-init-deps,compile">
+        <fail unless="netbeans.home">This target can only run inside the NetBeans IDE.</fail>
+        <nbprofiledirect>
+            <classpath> 
+                <path path="${run.classpath.computed}"/>
+            </classpath>
+        </nbprofiledirect>
+        <java jvm="${profiler.info.jvm}" fork="true" classname="${profile.class}" classpath="${run.classpath.computed}">
+            <jvmarg value="${profiler.info.jvmargs.agent}"/>
+            <jvmarg line="${profiler.session.jvm.args}"/>
+        </java>
     </target>
     
 </project>

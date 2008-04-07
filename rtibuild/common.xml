@@ -41,7 +41,7 @@
         
         <!-- hard coded defaults - if defined in the above files, they
              will be overridden -->
-        <property name="product.disabled.jars" value="" description="A list of jars to exclude from an installer"/>
+        <property name="product.disabled.jars" value="" description="A list of jars to exclude from an installer - matching is based upon the token appearing anywhere in the jar name"/>
         <property name="fork.javac" value="true" description="Whether to fork javac or not (true or false)"/>
         <property name="jdoc.includes" value="**/*.java" description="A list of files to include in javadoc"/>
         <property name="jdoc.excludes" value="docs/javadoc" description="A list of files to exclude in javadoc"/>
@@ -49,10 +49,9 @@
         <property name="java.target.version" value="1.4" description="The java byte code target level to pass to the compiler"/>
         <property name="javac.includes" value="**/*.java" description="Files to include in compilation"/>
         <property name="javac.excludes" value="" description="Files to exclude from compilation"/>
-        <property name="ext.dir" value="externals" description="A directory for externals"/>
-        <property name="src.dir" value="src" description="A directory for source code"/>
-        <property name="graphics.dir" value="graphics" description="A directory for graphics"/>
-        <property name="installer.dir" value="installer" description="A directory for installer"/>
+        <property name="ext.dir" value="externals" description="The directory for externals with contents defined by svn:externals"/>
+        <property name="src.dir" value="src" description="The directory for source code"/>
+        <property name="graphics.dir" value="graphics" description="The directory for graphics resources"/>
         <property name="test.dir" value="test" description="The name of a test directory"/>
         <property name="build.dir" value="bin" description="The name of a build directory"/>
         <property name="test.build.dir" value="${test.dir}/bin" description="The name of a test build directory"/>
@@ -65,6 +64,7 @@
         <property name="jar.extra.includes" value="" description="A list of includes to use for adding to jars"/>
         <property name="jar.excludes" value="" description="A list of excludes for jar building"/>
         <property name="default.jar.excludes" value="**/*.svn,${jar.excludes}" description="The default excludes - do not change this - instead change jar.excludes"/>
+        <property name="product.icon" value="${rti.build.home}/resources/RTi.ico" description="The product icon used in installers, exe, etc."/>
         
         <!-- computed properties-->
         <property name="jar.includes" value="**/*.png,**/*.gif,**/*.jpg,**/*.class/,**/*.properties,META-INF/**/*,${jar.extra.includes}" />
@@ -77,10 +77,8 @@
         <property name="test.classpath" value="" description="The classpath to use during test execution"/>
         
         <!-- required from product -->
-        <requireprop name="product.name"/>
-        <property name="product.name" value="" description="The name of the product"/>
-        <requireprop name="product.version" />
-        <property name="product.version" value="" description="The version of the product"/>
+        <required-property name="product.name" description="The name of the product"/>
+        <required-property name="product.version" description="The version of the product"/>
         
         <!-- common jars -->
         <property name="junit.jar" value="${rti.build.home}/lib/junit-3.8.1.jar"/>
@@ -144,14 +142,31 @@
         <antdoc/>
     </target>
     
-    <macrodef name="requireprop">
-        <attribute name="name" />
+    <macrodef name="required-property">
+        <attribute name="name"/>
+        <attribute name="description"/>
         <sequential>
             <condition property="@{name}.undefined">
                 <equals arg1="${@{name}}" arg2="undefined"/>
             </condition>
             <fail if="@{name}.undefined" message="@{name} must be defined"/>
             <fail unless="@{name}" message="product must define property @{name}" />
+            <property name="@{name}" description="@{description}" value=""/>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="isPropertySet">
+        <attribute name="name"/>
+        <attribute name="isset" default="@{name}.isset"/>
+        <sequential>
+            <condition property="@{isset}">
+                <and>
+                    <isset property="@{name}"/>
+                    <not>
+                        <equals arg1="${@{name}}" arg2=""/>
+                    </not>
+                </and>
+            </condition>
         </sequential>
     </macrodef>
     
