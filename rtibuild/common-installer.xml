@@ -64,7 +64,7 @@
     
     <target name="-local-install" depends="-init-installer,-standard-local-install,-standard-exe,-install-jre,install-license,-install-local"/>
         
-    <target name="-install-local" description="hook for implementors"/>
+    <target name="-install-local" description="hook to copy additional resources into local-install"/>
         
     <target name="-standard-local-install">
         <standard-local-install installDir="${install.dir}"/>
