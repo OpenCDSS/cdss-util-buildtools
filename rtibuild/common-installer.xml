@@ -67,8 +67,11 @@
         <standard-local-install installDir="${install.dir}"/>
     </target>
     
-    <target name="-install-license" if="license.file.isset">
-        <copy failonerror="true" todir="${install.dir}/system" file="${license.file}"/>
+    <target name="-install-license" if="license.file.isset" depends="-check-license">
+        <condition property="fail.on.missing.license" value="false" else="true">
+            <equals arg1="license.file" arg2="none"/>
+        </condition>
+        <copy failonerror="${fail.on.missing.license}" todir="${install.dir}/system" file="${license.file}"/>
     </target>
     
     <target name="-standard-exe" if="java.main.class.isset" depends="-init-installer">
