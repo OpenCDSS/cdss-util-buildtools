@@ -2,34 +2,31 @@
 <project name="rti-common-installer" default="-fail">
     <import file="common-build.xml"/>
     
-    <target name="-init-installer" depends="-init-deps">
+    <target name="-init-installer" depends="-init-deps,-init-jre">
         <property name="nsis.file" value="${product.name}.nsi" description="the nsis file to use for creating an installer"/>
         <property name="preferred.heap.size" value="256m" description="preferred vm heap size for exe launcher"/>
         <property name="install.name" value="install" description="the name of the local install folder within the dist directory"/>
         <property name="install.dir" value="${dist.dir}/${install.name}" description="the location of the local-install"/>
         <property name="exe.version" value="${product.version}" description="the n.n.n.n version to place in the exe file"/>
         <property name="license.file" value="" description="if set, the license file to copy into local install"/>
-        <property name="exe.jre" value="${java.target.version}" description="the name of the jre version (142,150) for install"/>
-        <!-- no built-in support for portable exe building yet -->
-        <property name="jre.base.dir" value="s:/DEVELOP" description="the directory to look for jre in"/>
-        <property name="jre.install.src.dir" value="${jre.base.dir}/jre_${exe.jre}"/>
+        <property name="exe.jre" value="${rti.jre.version}" description="the name of the jre version (142,150) for install"/>
         <isPropertySet name="license.file"/>
         <isPropertySet name="java.main.class"/>
     </target>
     
-    <target name="exe" description="generate an executable using launch4j" depends="-init-installer">
-        <launch4j-exe/>
-    </target>
+    <target name="exe" description="generate an executable using launch4j" depends="-standard-exe"/>
+    
+    <target name="clean-and-build-installer" description="clean and build local install, then create nsis installer" depends="clean-and-build-local-install,installer"/>
     
     <target name="installer" description="Create an nsis installer for this product" depends="-init,-pre-installer,local-install,-post-installer">
         <nsisinstaller nsi="${nsis.file}"/>
     </target>
     
-    <target name="installer-no-deps" description="Create nsis an installer - does not do any prep" depends="-init">
+    <target name="installer-only" description="Create nsis an installer - does not call any other targets" depends="-init">
         <nsisinstaller nsi="${nsis.file}"/>
     </target>
     
-    <target name="clean-and-build-local-install" description="clean and build local install" depends="clean-install,local-install"/>
+    <target name="clean-and-build-local-install" description="clean all deps, local install and then rebuild local-install" depends="clean-deps,clean-install,local-install"/>
     
     <target name="-clean-logs" description="clean log directories before installer">
         <delete dir="${install.dir}/logs" includes="*" failonerror="false"/>
@@ -38,19 +35,19 @@
     <target name="-pre-installer" depends="-clean-logs" description="Hook to execute before installer"/>
     <target name="-post-installer" description="Hook to execute after installer"/>
     
-    <target name="local-install" description="build local installation" depends="jar-deps,-local-install,exe"/>
-    <target name="local-install-no-deps" description="build local installation" depends="jar-no-deps,-local-install"/>
+    <target name="local-install" description="build local installation and executable (if java.main.class defined)" depends="jar-deps,-local-install,exe"/>
+    <target name="local-install-no-deps" description="build local installation without building any dependencies" depends="jar-no-deps,-local-install"/>
 
-    <target name="clean-install" description="clean local installation" depends="-init-installer">
+    <target name="clean-install" description="clean local installation only - does not clean deps or anything else" depends="-init-installer">
         <delete failonerror="false" dir="${install.dir}"/>
     </target>
     
-    <target name="local-install-no-build" description="do local install without building" depends="-local-install"/>
+    <target name="local-install-no-build" description="do local install without building, just collect previously built products" depends="-local-install"/>
     
     <target name="-install-jre" depends="-init-installer">
         <mkdir dir="${install.dir}/jre_${exe.jre}"/>
         <copy failonerror="false" todir="${install.dir}/jre_${exe.jre}">
-            <fileset dir="${jre.install.src.dir}"/>
+            <fileset dir="${jre.src.dir}"/>
         </copy>
     </target>
     
@@ -74,13 +71,14 @@
         <copy failonerror="true" todir="${install.dir}/system" file="${license.file}"/>
     </target>
     
-    <target name="-standard-exe" if="java.main.class.isset">
+    <target name="-standard-exe" if="java.main.class.isset" depends="-init-installer">
         <condition property="java.min.version" value="1.4.2">
             <equals arg1="${java.target.version}" arg2="142"/>
         </condition>
         <condition property="java.min.version" value="1.5.0">
             <equals arg1="${java.target.version}" arg2="150"/>
         </condition>
+        <exe-version-check versionString="${exe.version}" propertyName="exe.version"/>
         <launch4j-exe/>
     </target>
     
@@ -109,6 +107,17 @@
         </sequential>
     </macrodef>
     
+    <macrodef name="exe-version-check">
+        <attribute name="versionString"/>
+        <attribute name="propertyName"/>
+        <sequential>
+            <condition property="version.ok">
+                <matches pattern="\d+\.\d+\.\d+\.\d+" string="@{versionString}"/>
+            </condition>
+            <fail unless="version.ok">@{propertyName} must be defined with a value in the form 'x.x.x.x', not @{versionString}</fail>
+        </sequential>
+    </macrodef>
+    
     <macrodef name="launch4j-exe">
         <attribute name="destDir" default="${install.dir}/bin"/>
         <attribute name="exe" default="${product.name}"/>
@@ -123,8 +132,8 @@
         <element name="opts" optional="true"/>
         <element name="args" optional="true"/>
         <sequential>
+            <exe-version-check versionString="@{exeVersion}" propertyName="exeVersion"/>
             <property name="full.icon.path" location="@{productIcon}"/>
-            <echo>@{exeVersion}</echo>
             <echoxml file="${dist.dir}/launch4j.xml">
                 <launch4jConfig>
                     <headerType>0</headerType>
