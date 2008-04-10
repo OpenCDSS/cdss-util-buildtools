@@ -101,6 +101,34 @@
         <path id="collected.deps.path"/>
     </target>
     
+    <target name="-init-jre" depends="-init-props">
+        <condition property="jre.base.dir" value="/opt">
+            <os family="unix"/>
+        </condition>
+        <condition property="jre.142.name" value="jre1.4.2">
+            <os family="unix"/>
+        </condition>
+        <condition property="jre.150.name" value="jre1.5.0">
+            <os family="unix"/>
+        </condition>
+        <condition property="rti.jre.version" value="142">
+            <equals arg1="${java.src.version}" arg2="1.4"/> 
+        </condition>
+        <condition property="rti.jre.version" value="150">
+            <equals arg1="${java.src.version}" arg2="1.5"/> 
+        </condition>
+        <!-- defaults, if the above rules haven't set the jres, these will -->
+        <property name="jre.142.name" value="jre_142" />
+        <property name="jre.150.name" value="jre_150" />
+        <property name="jre.base.dir" value="s:/DEVELOP/" description="The location to search for jres"/>
+        <condition property="jre.src.dir" value="${jre.base.dir}/${jre.142.name}">
+            <equals arg1="${java.src.version}" arg2="1.4"/> 
+        </condition>
+        <condition property="jre.src.dir" value="${jre.base.dir}/${jre.150.name}">
+            <equals arg1="${java.src.version}" arg2="1.5"/> 
+        </condition>
+    </target>
+    
     <target name="-init-jdk" depends="-init-props">
         <condition property="jdk.base.dir" value="/opt">
             <os family="unix"/>
@@ -141,6 +169,14 @@
         <taskdef name="antdoc" classpathref="rti.buildtools.path" classname="rti.build.ant.GenerateBuildDoc" onerror="ignore"/>
         <antdoc/>
     </target>
+    
+    <macrodef name="requireprop">
+        <attribute name="name"/>
+        <attribute name="message" default="The property @{name} must be defined."/>
+        <sequential>
+            <fail unless="@{name}" message="@{message}"/>
+        </sequential>
+    </macrodef>
     
     <macrodef name="required-property">
         <attribute name="name"/>
