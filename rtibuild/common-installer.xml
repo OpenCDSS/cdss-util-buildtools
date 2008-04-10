@@ -38,7 +38,7 @@
     <target name="local-install" description="build local installation and executable (if java.main.class defined)" depends="jar-deps,-local-install,exe"/>
     <target name="local-install-no-deps" description="build local installation without building any dependencies" depends="jar-no-deps,-local-install"/>
 
-    <target name="clean-install" description="clean local installation only - does not clean deps or anything else" depends="-init-installer">
+    <target name="clean-local-install" description="clean local installation only - does not clean deps or anything else" depends="-init-installer">
         <delete failonerror="false" dir="${install.dir}"/>
     </target>
     
