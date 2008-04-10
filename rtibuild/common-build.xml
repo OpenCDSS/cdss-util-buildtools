@@ -15,9 +15,9 @@ located in conf
         <property name="emma.filter" value="rti.*, RTi.*" description="emma includes filter"/>
     </target>
     
-    <target name="-pre-compile-java" description="hook target for implementors"/>
+    <target name="-pre-compile-java" description="hook target called before compilation"/>
     
-    <target name="compile-nodeps" description="Compile java but set nodeps flag for products with dependencies" depends="-init">
+    <target name="compile-nodeps" description="Compile java but do not compile dependencies" depends="-init">
         <property name="nodeps" value="true"/>
         <antcall inheritall="true" target="compile"/>
     </target>
@@ -49,9 +49,9 @@ located in conf
         </copy>
     </target>
     
-    <target name="build" depends="clean,compile"/>
+    <target name="build" depends="clean,compile" description="clean and compile this product"/>
     
-    <target name="javadoc" description="Target for creating Javadocs" depends="-init,-init-java">
+    <target name="javadoc" description="Create javadocs" depends="-init,-init-java">
         <mkdir dir="${jdoc.dir}"/>
         <javadoc destdir="${jdoc.dir}">
             <classpath>
@@ -67,8 +67,7 @@ located in conf
         <delete dir="${test.build.dir}" quiet="true" />
     </target>
     
-    <target name="clean-deps" depends="-init,-init-deps,clean" if="product.deps" description="clean with dependencies">
-        <taskdef name="collectem" classpath="${rtibuild.dir}/dist/rtibuild_1_0.jar" classname="rti.build.ant.CollectProductDependencies"/>
+    <target name="clean-deps" depends="-init,-init-deps,clean" if="product.deps" description="clean this product and all dependencies">
         <collectproducts separator=","/>
         <deps target="clean" products="${collected.product.deps}"/>
     </target>
@@ -82,6 +81,11 @@ located in conf
         <delete dir="${jdoc.dir}" quiet="true" />
         <delete dir="${dist.dir}" quiet="true" />
         <delete dir="${test.build.dir}" quiet="true" />
+    </target>
+    
+    <target name="clean-all-deps" description="Clean all build products and clean-all on all dependencies" depends="-init,-init-deps,clean-all">
+        <collectproducts separator="," property="collected.product.deps"/>
+        <deps target="clean-all" products="${collected.product.deps}"/>
     </target>
     
     <target name="test" description="Run all tests" depends="-init,-enable-emma,-check-tests">
@@ -121,7 +125,7 @@ located in conf
         <antcall target="jar-no-deps"/>
     </target>
     
-    <target name="pre-release" description="Complete clean,build, and test" depends="clean-deps,compile,test-deps"/>
+    <target name="pre-release" description="Complete clean,build,test, and jar" depends="clean-deps,jar"/>
     
     <target name="-enable-emma" depends="-init-build">
         <property name="emma.enabled" value="true" />
