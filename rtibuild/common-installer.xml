@@ -67,7 +67,7 @@
         <standard-local-install installDir="${install.dir}"/>
     </target>
     
-    <target name="-install-license" if="license.file.isset" depends="-check-license">
+    <target name="-install-license" if="license.file.isset"> 
         <condition property="fail.on.missing.license" value="false" else="true">
             <equals arg1="license.file" arg2="none"/>
         </condition>
