@@ -26,7 +26,7 @@
         <nsisinstaller nsi="${nsis.file}"/>
     </target>
     
-    <target name="clean-and-build-local-install" description="clean all deps, local install and then rebuild local-install" depends="clean-deps,clean-install,local-install"/>
+    <target name="clean-and-build-local-install" description="clean all deps, local install and then rebuild local-install" depends="clean-deps,clean-local-install,local-install"/>
     
     <target name="-clean-logs" description="clean log directories before installer">
         <delete dir="${install.dir}/logs" includes="*" failonerror="false"/>
