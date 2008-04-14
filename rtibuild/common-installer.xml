@@ -69,7 +69,7 @@
     
     <target name="-install-license" if="license.file.isset"> 
         <condition property="fail.on.missing.license" value="false" else="true">
-            <equals arg1="license.file" arg2="none"/>
+            <equals arg1="${license.file}" arg2="none"/>
         </condition>
         <copy failonerror="${fail.on.missing.license}" todir="${install.dir}/system" file="${license.file}"/>
     </target>
