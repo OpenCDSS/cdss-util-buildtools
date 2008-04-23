@@ -142,7 +142,7 @@
                     <headerType>0</headerType>
                     <outfile>@{exe}.exe</outfile>
                     <jar>${jar.name}</jar>
-                    <customProcName>true</customProcName>
+                    <stayAlive>true</stayAlive>
                     <dontWrapJar>true</dontWrapJar>
                     <icon>${full.icon.path}</icon>
                     <args/>
