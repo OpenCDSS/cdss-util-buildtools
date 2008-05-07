@@ -1,0 +1,16 @@
+#!/bin/sh
+
+JYTHON_HOME="$(dirname "$(which jython)")"
+#portable classpath
+case "`uname`" in
+  CYGWIN*) cygwin=true
+esac
+if [ $cygwin ]; then
+  CP="@cygpath@"
+else
+  CP="@run.classpath.computed@"
+fi
+CPATH=$JYTHON_HOME/jython.jar:$JYTHON_HOME/libreadline-java.jar:$CP
+java="${java-"@java.exe@"}"
+export LD_LIBRARY_PATH=$JYTHON_HOME
+eval \"$java\" -Dpython.path=$LIB_PATH -client -Xmx256m -classpath \"$CP\" org.python.util.jython $@

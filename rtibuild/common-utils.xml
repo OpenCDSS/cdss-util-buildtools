@@ -16,6 +16,21 @@
         </dojar>
     </target>
     
+    <target name="generate-jython-launcher" description="Generate a launcher script for this product" depends="-init-deps,-init-java">
+        <mkdir dir="scripts"/>
+        <property name="script.name" value="scripts/jython" />
+        <available property="script.exists" file="${script.name}" />
+        <pathconvert property="cygpath" targetos="windows">
+            <path path="${run.classpath.computed}" />
+        </pathconvert>
+        <fail if="script.exists" message="I'm not going to overwrite the existing script" />
+        <filter token="cygpath" value="${cygpath}"/>
+        <filter token="java.exe" value="${java.exe}"/>
+        <filter token="run.classpath.computed" value="${run.classpath.computed}"/>
+        <copy file="${ant.file.rti-common-build}/../resources/templates/jython.template" tofile="${script.name}" filtering="true"/>
+        <chmod perm="u+x" file="${script.name}" />
+    </target>
+    
     <target name="generate-launcher-script" description="Generate a launcher script for this product" depends="-init-deps,-init-java">
         <mkdir dir="scripts"/>
         <property name="script.name" value="scripts/run" />
@@ -27,7 +42,7 @@
         <filter token="cygpath" value="${cygpath}"/>
         <filter token="java.exe" value="${java.exe}"/>
         <filter token="run.classpath.computed" value="${run.classpath.computed}"/>
-        <copy file="${ant.file.rti-common-build}/../run.template" tofile="${script.name}" filtering="true"/>
+        <copy file="${ant.file.rti-common-build}/../resources/templates/run.template" tofile="${script.name}" filtering="true"/>
         <chmod perm="u+x" file="${script.name}" />
     </target>
     
