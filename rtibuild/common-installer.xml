@@ -20,11 +20,11 @@
     
     <target name="clean-and-build-installer" description="clean and build local install, then create nsis installer" depends="clean-and-build-local-install,installer"/>
     
-    <target name="installer" description="Create an nsis installer for this product" depends="-init,-pre-installer,local-install,-post-installer,-nsis-installer"/>
+    <target name="installer" description="Create an nsis installer for this product" depends="-pre-installer,local-install,-post-installer,-nsis-installer"/>
     
-    <target name="installer-only" description="Create nsis an installer - does not call any other targets" depends="-init,-nsis-installer"/>
+    <target name="installer-only" description="Create nsis an installer - does not call any other targets" depends="-nsis-installer"/>
     
-    <target name="-nsis-installer" description="Do the actual work to build the installer">
+    <target name="-nsis-installer" description="Do the actual work to build the installer" depends="-init-installer">
         <property name=".nsis.defines" value="/DVERSION=${nsis.version} ${nsis.defines}"/>
         <nsisinstaller nsi="${nsis.file}" defines="${.nsis.defines}"/>
     </target>
