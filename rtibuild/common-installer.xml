@@ -12,6 +12,8 @@
         <property name="nsis.version" value="${exe.version}" description="the version to use in the nsis installer setup.exe and other locations (menu,etc)"/>
         <property name="license.file" value="" description="if set, the license file to copy into local install"/>
         <property name="exe.jre" value="${rti.jre.version}" description="the name of the jre version (142,150) for install"/>
+        <property name="app.home.token" value="rti.app.home" description="the name of the system property passed by the executable to java that holds the location of the install"/>
+        <property name="installer.icon" value="${product.icon}"/>
         <isPropertySet name="license.file"/>
         <isPropertySet name="java.main.class"/>
     </target>
@@ -131,12 +133,12 @@
         <attribute name="exe" default="${product.name}"/>
         <attribute name="exeVersion" default="${exe.version}"/>
         <attribute name="mainClass" default="${java.main.class}"/>
-        <!-- product.icon is specified with respect to root directory,
-        but launch4j-exe runs in dist -->
-        <attribute name="productIcon" default="${product.icon}"/>
+        <attribute name="productIcon" default="${installer.icon}"/>
         <attribute name="jreName" default="${exe.jre}"/>
         <attribute name="preferredHeapSize" default="${preferred.heap.size}"/>
         <attribute name="minVersion" default="1.4.2"/>
+        <attribute name="homeToken" default="${app.home.token}"/>
+        <element name="chdir" optional="true"/>
         <element name="opts" optional="true"/>
         <element name="args" optional="true"/>
         <sequential>
@@ -150,14 +152,16 @@
                     <stayAlive>true</stayAlive>
                     <dontWrapJar>true</dontWrapJar>
                     <icon>${full.icon.path}</icon>
+                    <chdir/>
                     <args/>
-		    <classPath>
-			<mainClass>@{mainClass}</mainClass>
-			<cp>%EXEDIR%/*.jar</cp>	
-		    </classPath>
+                    <classPath>
+                        <mainClass>@{mainClass}</mainClass>
+                        <cp>%EXEDIR%/*.jar</cp>	
+                    </classPath>
                     <jre>
                         <path>..\\jre_@{jreName}</path>
                         <minVersion>@{minVersion}</minVersion>
+                        <opt>-D@{homeToken}="%EXEDIR%"/..</opt>
                         <opts/>
                     </jre>
                     <versionInfo>
