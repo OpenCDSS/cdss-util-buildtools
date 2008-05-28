@@ -44,6 +44,7 @@ def svn(*args):
   p = os.popen(cmd)
   output = filter(lambda line: len(line) and line or None, (i[:-1] for i in p))
   if p.close():
+    print output
     raise Exception("Error '" + cmd + "'")
   return output
 
@@ -56,7 +57,6 @@ def makedict(lines,split=None):
     if len(keyValue) > 1:
       d[keyValue[0]] = keyValue[1]
   return d
-     
 
 def getExternals(productDir):
   """Return a list of externals for a directory"""
@@ -89,9 +89,15 @@ def locateTags(externals):
         break;
   return tags
 
-def makeTag(src,dest,message):
+def makeTag(src,dest,message,allowFailure):
   """Create a tag in the repository 'dest', copying from 'src'"""
-  svn("copy","-m",message,src,dest)
+  try:
+    svn("copy","-m",message,src,dest)
+  except Exception, ex:
+    if allowFailure:
+        print "tagging failed, ignoring", ex
+    else
+        raise ex
   
 
 def tagExternals(externals,tag,message,dry):
@@ -108,7 +114,7 @@ def tagExternals(externals,tag,message,dry):
       fulltag = tags[local] + "/" + local + "-" + tag
       print remote + " -> " + fulltag
       if not dry:
-        makeTag(remote,fulltag,message)
+        makeTag(remote,fulltag,message,1)
 
 def promptForCommitMessage():
   print "Enter a commit message (enter one empty line to finish):"
