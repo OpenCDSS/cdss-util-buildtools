@@ -96,7 +96,7 @@ def makeTag(src,dest,message,allowFailure):
   except Exception, ex:
     if allowFailure:
         print "tagging failed, ignoring", ex
-    else
+    else:
         raise ex
   
 
