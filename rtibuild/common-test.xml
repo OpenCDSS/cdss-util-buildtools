@@ -111,7 +111,7 @@
         <attribute name="build" default="${test.build.dir}/@{type}"/>
         <attribute name="cp" default="${test.classpath.computed}" />
         <sequential>
-            <echo >Compiling tests with classpath : @{cp}</echo>
+            <echo level="verbose">Compiling tests with classpath : @{cp}</echo>
             <javacompile src="@{src}" dest="@{build}" cp="@{cp}" useant="true"/>
             <copy todir="@{build}">
                 <fileset dir="@{src}" includes="${jar.includes}" excludes="${default.jar.excludes}" />
