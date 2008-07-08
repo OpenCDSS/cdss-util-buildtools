@@ -58,6 +58,8 @@ located in conf
                 <path path="${build.classpath}" />
             </classpath>
             <packageset dir="${src.dir}" includes="rti/**,RTi/**"/>
+            <tag name="todo"/>
+            <tag name="revisit"/>
         </javadoc>
     </target>
     
