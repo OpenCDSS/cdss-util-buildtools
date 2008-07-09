@@ -73,9 +73,11 @@
     </target>
     
     <target name="-install-license" if="license.file.isset"> 
+        <!--
         <condition property="fail.on.missing.license" value="false" else="true">
             <equals arg1="${license.file}" arg2="none"/>
         </condition>
+        -->
         <property name="license.dest" value="${product.name}.cfg"/>
         <property name=".license.dest" value="${install.dir}/system/${license.dest}"/>
         <copy overwrite="true" failonerror="${fail.on.missing.license}" tofile="${.license.dest}" file="${license.file}"/>
