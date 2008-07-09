@@ -55,7 +55,10 @@ public class CollectProductDependencies extends Task {
         } catch (IOException ioe) {
             throw new BuildException(ioe);
         }
-        return topologicalSort(projectDeps);
+        List sorted = topologicalSort(projectDeps);
+        // remove this from the dependencies
+        sorted.remove(getProject().getBaseDir());
+        return sorted;
     }
     
     protected String buildPath(Collection stuff) {
