@@ -49,7 +49,7 @@
     
     <target name="local-install-no-build" description="do local install without building, just collect previously built products" depends="-local-install"/>
     
-    <target name="-install-jre" depends="-init-installer">
+    <target name="-install-jre" depends="-init-installer" unless="no.jre.install">
         <mkdir dir="${install.dir}/jre_${exe.jre}"/>
         <copy failonerror="false" todir="${install.dir}/jre_${exe.jre}">
             <fileset dir="${jre.src.dir}"/>
