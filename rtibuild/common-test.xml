@@ -165,11 +165,10 @@
                     <path refid="emma.libs"/>
                 </classpath>
                 
-                <!-- be sure to exclude coverage/** or a bunch of classloader problems will ensue -->
                 <batchtest todir="@{out}">
                     <fileset dir="@{build}" 
                              includes="@{include} ${@{type}.test.include}" 
-                             excludes="${coverage.dir}/** @{exclude} ${@{type}.test.exclude}">
+                             excludes="@{exclude} ${@{type}.test.exclude}">
                     </fileset>
                 </batchtest>
             </junit>
