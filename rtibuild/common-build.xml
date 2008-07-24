@@ -11,7 +11,7 @@ located in conf
         <property name="java.main.vmargs" value="" description="VM arguments to pass to java during execution"/>
         <property name="java.main.cwd" value="${basedir}" description="The current working directory to run with"/>
         <property name="java.main.class" value="undefined" description="The main class to run with"/>
-        <property name="coverage.dir" location="${test.build.dir}/coverage" description="emma coverage output directory"/>
+        <property name="coverage.dir" location="${test.dir}/coverage" description="emma coverage output directory"/>
         <property name="emma.filter" value="rti.*, RTi.*" description="emma includes filter"/>
     </target>
     
@@ -71,6 +71,7 @@ located in conf
         <delete dir="${build.dir}" quiet="true" />
         <delete file="${dist.dir}/${jar.name}" quiet="true" />
         <delete dir="${test.build.dir}" quiet="true" />
+        <delete dir="${coverage.dir}" quiet="true" />
     </target>
     
     <target name="clean-deps" depends="-init,-init-deps,clean" if="product.deps" description="clean this product and all dependencies">
@@ -78,15 +79,10 @@ located in conf
         <deps target="clean" products="${collected.product.deps}"/>
     </target>
     
-    <target name="-clean-tests">
-        <delete dir="${test.build.dir}" quiet="true" />
-    </target>
-    
-    <target name="clean-all" description="Clean all build products" depends="-init">
-        <delete dir="${build.dir}" quiet="true" />
+    <target name="clean-all" description="Clean all build products" depends="-init,clean">
         <delete dir="${jdoc.dir}" quiet="true" />
         <delete dir="${dist.dir}" quiet="true" />
-        <delete dir="${test.build.dir}" quiet="true" />
+        <delete dir="${test.dir}/results" quiet="true" />
     </target>
     
     <target name="clean-all-deps" description="Clean all build products and clean-all on all dependencies" depends="-init,-init-deps,clean-all">
