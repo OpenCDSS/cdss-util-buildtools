@@ -4,18 +4,16 @@
     <import file="common.xml"/>
     
     <target name="-init-tests" depends="-init-deps">
-        <dirname property="test.dir" file="${ant.file}"/>
         <property file="${test.dir}/test-user.properties"/>
         <property file="${test.dir}/test.properties"/>
-        <property name="junit.jar" value="s:/DEVELOP/junit/junit3.8.1/junit.jar"/>
         <available property="unit.exists" file="${test.dir}/unit/src"/>
         <available property="operational.exists" file="${test.dir}/operational/src"/>
         <available property="regression.exists" file="${test.dir}/regression/src"/>
-        <property name="test.classpath.computed" value="${test.classpath}:${collected.jar.deps}"/>
+        <property name="test.classpath.computed" value="${junit.jar}:${test.classpath}:${collected.jar.deps}"/>
     </target> 
     
     <target name="all-tests" depends="-init-tests" description="run all tests">
-        <runtests type="" dir="${test.dir}"/>
+        <runtests type=""/>
     </target>
     
     <target name="unit-test" description="run unit tests" depends="-init-tests,-unit-test-suite,-unit-tests"/>
@@ -101,7 +99,6 @@
                 <filelist dir="${test.dir}/${test.type}/src" files="${files}"/>
             </path>
         </pathconvert>
-        <echo>RUNTESTS : ${test.classes}</echo>
         <runtests type="${test.type}" include="${test.classes}"/>
     </target>
     
@@ -121,11 +118,30 @@
     
     <macrodef name="runsuite">
         <attribute name="type"/>
-        <attribute name="cp" default="$test.classpath.computed}"/>
+        <attribute name="cp" default="${test.classpath.computed}"/>
+        <attribute name="build" default="${test.build.dir}/@{type}"/>
         <sequential>
             <fail unless="@{type}.test.suite" message="@{type}.test.suite not defined"/>
-            <javacompile src="${test.dir}/@{type}/src" dest="${test.build.dir}/@{type}" cp="${junit.jar}:@{cp}" useant="true"/>
-            <testsuite suite="${@{type}.test.suite}" out="test/@{type}/results" cp="@{cp}:${test.build.dir}" dir="${test.dir}/.."/>
+            <javacompile src="${test.dir}/@{type}/src" dest="@{build}" cp="@{cp}" useant="true"/>
+            <testsuite suite="${@{type}.test.suite}" out="test/@{type}/results" cp="@{cp}:@{build}"/>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="testsuite">
+        <attribute name="suite" description="the java suite to run" />
+        <attribute name="out" description="The destination for test results"/>
+        <attribute name="dir" default="${basedir}"/>
+        <attribute name="cp" default="${build.classpath}:${test.classpath.computed}" />
+        <sequential>
+            <mkdir dir="@{out}" />
+            <junit printsummary="yes" fork="yes" dir="@{dir}" haltonfailure="true">
+                <assertions />
+                <formatter type="xml" />
+                <classpath>
+                    <path path="@{cp}" />
+                </classpath>
+                <test name="@{suite}" outfile="@{out}" />
+            </junit>
         </sequential>
     </macrodef>
     
@@ -134,7 +150,7 @@
         <attribute name="src" default="${test.dir}/@{type}/src"/>
         <attribute name="out" default="${test.dir}/@{type}/results"/>
         <attribute name="build" default="${test.build.dir}/@{type}"/>
-        <attribute name="dir" default="${test.dir}/"/>
+        <attribute name="dir" default="${basedir}"/>
         <attribute name="cp.extra" default=""/>
         <attribute name="cp" default="@{cp.extra}:${test.classpath.computed}" />
         <attribute name="include" default="**/*Test.class"/>
@@ -144,8 +160,6 @@
         <sequential>
             <mkdir dir="@{out}"/>
             <build-tests type="@{type}" src="@{src}" build="@{build}" cp="@{cp}"/>
-            <!-- @todo junit is run in the test directory, while everything else is
-            using project root for reference -->
             <junit printsummary="withOutAndErr" fork="yes" forkmode="once"
                    dir="@{dir}" haltonfailure="@{haltOnFail}" filtertrace="off" showoutput="yes"> 
                 <jvmarg value="-Demma.coverage.out.file=${coverage.dir}/coverage.emma"/>
