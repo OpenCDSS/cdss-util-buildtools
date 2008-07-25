@@ -10,7 +10,7 @@
         <property name="skip.bootstrap" value="true"/>
     </target>
     
-    <property name="rti.build.home" value="${ant.file.rti-common}/../"/>
+    <property name="rti.build.home" location="${ant.file.rti-common}/../"/>
     <path id="emma.libs">
         <pathelement location="${rti.build.home}/lib/emma.jar" />
         <pathelement location="${rti.build.home}/lib/emma_ant.jar" />
@@ -36,8 +36,6 @@
         </condition>
         <property file="${rti.build.home}/conf/${os.properties}"/>
         <property file="conf/product.properties" />
-        
-        <basename property="product.dir.name" file="${basedir}"/>
         
         <!-- hard coded defaults - if defined in the above files, they
              will be overridden -->
@@ -70,7 +68,6 @@
         <property name="jar.includes" value="**/*.png,**/*.gif,**/*.jpg,**/*.class/,**/*.properties,META-INF/**/*,${jar.extra.includes}" />
         <property name="jar.name" value="${product.name}_${product.version}.jar" />
         <property name="jar.file" value="${dist.dir}/${jar.name}"/>
-        <dirname property="rtibuild.dir" file="${ant.file.rti-common-build}"/>
         
         <property name="run.classpath" value="" description="The classpath to use during execution"/>
         <property name="build.classpath" value="" description="The classpath to use during compilation"/>
@@ -85,15 +82,15 @@
     </target>
     
     <target name="-init-plugins">
-        <path id="rti.buildtools.path" path="${rtibuild.dir}/dist/rtibuild_1_0.jar"/>
+        <path id="rti.buildtools.path" path="${rti.build.home}/dist/rtibuild_1_0.jar"/>
         <taskdef name="collectjars" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectJarDependencies" onerror="ignore"/>
         <taskdef name="collectproducts" classpathref="rti.buildtools.path" classname="rti.build.ant.CollectProductDependencies" onerror="ignore"/>        
     </target>
     
     <target name="-init-deps" depends="-init">
-        <available property="rtibuild.present" file="${rtibuild.dir}/dist/rtibuild_1_0.jar"/>
+        <available property="rtibuild.present" file="${rti.build.home}/dist/rtibuild_1_0.jar"/>
         <fail unless="rtibuild.present" message="Please run the bootstrap target to build rtibuild ant extensions"/>
-        <available property="rtibuild.present" file="${rtibuild.dir}/dist/rtibuild_1_0.jar"/>
+        <available property="rtibuild.present" file="${rti.build.home}/dist/rtibuild_1_0.jar"/>
         <fail unless="rtibuild.present" message="Please run the bootstrap target to build rtibuild ant extensions"/>
         <echo level="verbose">Disabled jars : ${product.disabled.jars}</echo>
         <collectjars useBuildDirs="true" excludes="${product.disabled.jars}"/>
@@ -203,24 +200,6 @@
                     </not>
                 </and>
             </condition>
-        </sequential>
-    </macrodef>
-    
-    <macrodef name="testsuite">
-        <attribute name="suite" description="the java suite to run" />
-        <attribute name="out" description="The destination for test results"/>
-        <attribute name="dir" default="${user.dir}"/>
-        <attribute name="cp" default="${build.classpath}:${test.classpath}" />
-        <sequential>
-            <mkdir dir="@{out}" />
-            <junit printsummary="yes" fork="yes" dir="@{dir}" haltonfailure="true">
-                <assertions />
-                <formatter type="xml" />
-                <classpath>
-                    <path path="@{cp}" />
-                </classpath>
-                <test name="@{suite}" outfile="@{out}" />
-            </junit>
         </sequential>
     </macrodef>
     
