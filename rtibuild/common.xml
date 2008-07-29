@@ -63,6 +63,8 @@
         <property name="jar.excludes" value="" description="A list of excludes for jar building"/>
         <property name="default.jar.excludes" value="**/*.svn,${jar.excludes}" description="The default excludes - do not change this - instead change jar.excludes"/>
         <property name="product.icon" value="${rti.build.home}/resources/RTi.ico" description="The product icon used in installers, exe, etc."/>
+        <property name="coverage.dir" location="${test.dir}/coverage" description="emma coverage output directory"/>
+        <property name="emma.filter" value="rti.*, RTi.*" description="emma includes filter"/>
         
         <!-- computed properties-->
         <property name="jar.includes" value="**/*.png,**/*.gif,**/*.jpg,**/*.class/,**/*.properties,META-INF/**/*,${jar.extra.includes}" />
@@ -160,6 +162,30 @@
             <equals arg1="${java.src.version}" arg2="1.5" />
         </condition>
         <property name="java.exe" value="${jdk.run.home}/bin/java" description="The java executable to use when executing"/>
+    </target>
+    
+    <target name="-enable-emma" depends="-init-build">
+        <property name="emma.enabled" value="true" />
+        <mkdir dir="${coverage.dir}"/>
+    </target>
+    
+    <target name="-emma" depends="-init-build">
+        <emma enabled="${emma.enabled}" >
+            <instr instrpath="${build.dir}"
+                   destdir="${coverage.dir}/instr"
+                   metadatafile="${coverage.dir}/metadata.emma"
+                   merge="true">
+                       <filter includes="${emma.filter}"/>
+                       </instr>
+        </emma>
+    </target>
+    
+    <target name="-init-build" depends="-init">
+        <property name="java.main.vmargs" value="" description="VM arguments to pass to java during execution"/>
+        <property name="java.main.cwd" value="${basedir}" description="The current working directory to run with"/>
+        <property name="java.main.class" value="undefined" description="The main class to run with"/>
+        <property name="coverage.dir" location="${test.dir}/coverage" description="emma coverage output directory"/>
+        <property name="emma.filter" value="rti.*, RTi.*" description="emma includes filter"/>
     </target>
     
     <target name="ant-doc" description="Generate ant documentation" depends="-init">
