@@ -3,48 +3,46 @@
     
     <import file="common.xml"/>
     
-    <target name="-init-tests" depends="-init-deps">
+    <target name="-init-tests" depends="-init-deps,-init-build,-enable-emma">
         <property file="${test.dir}/test-user.properties"/>
         <property file="${test.dir}/test.properties"/>
         <available property="unit.exists" file="${test.dir}/unit/src"/>
         <available property="operational.exists" file="${test.dir}/operational/src"/>
         <available property="regression.exists" file="${test.dir}/regression/src"/>
+        <available property="uncategorized.exists" file="${test.dir}/src"/>
         <property name="test.classpath.computed" value="${junit.jar}:${test.classpath}:${collected.jar.deps}"/>
     </target> 
     
-    <target name="all-tests" depends="-init-tests" description="run all tests">
-        <runtests type=""/>
-    </target>
+    <target name="all-tests" 
+        depends="unit-test,regression-test,operational-test,uncategorized-test" 
+        description="run all tests"/>
     
-    <target name="unit-test" description="run unit tests" depends="-init-tests,-unit-test-suite,-unit-tests"/>
-    <target name="regression-test" description="run regression tests" depends="-init-tests,-regression-test-suite,-regression-tests"/>
-    <target name="operational-test" description="run operational tests" depends="-init-tests,-operational-test-suite,-operational-tests"/>
+    <target name="unit-test" description="run unit tests" depends="-init-tests,-unit-tests"/>
+    <target name="regression-test" description="run regression tests" depends="-init-tests,-regression-tests"/>
+    <target name="operational-test" description="run operational tests" depends="-init-tests,-operational-tests"/>
+    <target name="uncategorized-test" description="run other tests" depends="-init-tests,-uncategorized-tests"/>
     
     <target name="-unit-test-suite"  if="unit.test.suite" depends="-init-tests">
         <runsuite type="unit"/>
     </target>
     
-    <target name="-regression-test-suite"  if="regression.test.suite" depends="-init-tests">
-        <runsuite type="regression"/>
-    </target>
-    
-    <target name="-operational-test-suite"  if="operational.test.suite" depends="-init-tests">
-        <runsuite type="operational"/>
-    </target>
-    
-    <target name="-unit-tests"  if="unit.exists" depends="-init-tests">
+    <target name="-unit-tests"  if="unit.exists" unless="skip.unit" depends="-init-tests">
         <runtests type="unit"/>
     </target>
     
-    <target name="-regression-tests"  if="regression.exists" depends="-init-tests">
+    <target name="-regression-tests"  if="regression.exists" unless="skip.regression" depends="-init-tests">
         <runtests type="regression"/>
     </target>
     
-    <target name="-operational-tests" if="operational.exists" depends="-init-tests">
+    <target name="-operational-tests" if="operational.exists" unless="skip.operational" depends="-init-tests">
         <runtests type="operational"/>
     </target>
     
-    <target name="build-all-tests" depends="-init-tests">
+    <target name="-uncategorized-tests" if="uncategorized.exists" depends="-init-tests">
+        <runtests type=""/>
+    </target>
+    
+    <target name="build-all-tests" depends="-init-tests,-enable-emma">
         <build-tests type=""/>
     </target>
     
@@ -108,6 +106,7 @@
         <attribute name="build" default="${test.build.dir}/@{type}"/>
         <attribute name="cp" default="${test.classpath.computed}" />
         <sequential>
+            <antcall target="-emma"/>
             <echo level="verbose">Compiling tests with classpath : @{cp}</echo>
             <javacompile src="@{src}" dest="@{build}" cp="@{cp}" useant="true"/>
             <copy todir="@{build}">
@@ -154,7 +153,7 @@
         <attribute name="cp.extra" default=""/>
         <attribute name="cp" default="@{cp.extra}:${test.classpath.computed}" />
         <attribute name="include" default="**/*Test.class"/>
-        <attribute name="exclude" default="**/*Suite*.class"/>
+        <attribute name="exclude" default="**/*Suite.class"/>
         <attribute name="haltOnFail" default="false"/>
         <element name="vmargs" optional="true"/>
         <sequential>
