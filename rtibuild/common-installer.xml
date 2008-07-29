@@ -95,7 +95,7 @@
     </target>
     
     <target name="-bootstrap-cipher" depends="-init">
-        <ant antfile="${rtibuild.dir}/externals/RTiCipher/conf/build.xml" dir="${rtibuild.dir}/externals/RTiCipher" target="jar"/>
+        <ant antfile="${rti.build.home}/externals/RTiCipher/conf/build.xml" dir="${rti.build.home}/externals/RTiCipher" target="jar"/>
     </target>
     
     <macrodef name="standard-local-install" description="perform a local install for a 'standard' app">
@@ -214,7 +214,7 @@
         <attribute name="owner"/>
         <attribute name="type"/>
         <sequential>
-            <taskdef name="licensegen" classpath="${rtibuild.dir}/externals/RTiCipher/dist/RTiCipher_142.jar" classname="RTi.App.RTiCipher.GenerateLicenseTask"/>
+            <taskdef name="licensegen" classpath="${rti.build.home}/externals/RTiCipher/dist/RTiCipher_142.jar" classname="RTi.App.RTiCipher.GenerateLicenseTask"/>
             <tstamp>
                 <format property="expires" offset="@{expirationCount}" pattern="yyyyMMdd" unit="@{expirationUnit}"/>
             </tstamp>

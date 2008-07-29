@@ -7,7 +7,6 @@
     
     <target name="onejar" description="Create single jar from all deps" depends="-init-deps,compile">
         <deps target="jar" products="${product.deps}"/>
-        <taskdef name="collectjars" classpath="${rtibuild.dir}/dist/rtibuild_1_0.jar" classname="rti.build.ant.CollectJarDependencies"/>
         <collectjars separator=","/>
         <dojar jar="${jar.name}">
             <zipfiles>

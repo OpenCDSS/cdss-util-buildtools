@@ -12,7 +12,7 @@ these targets.
     <target name="-run-selected-file" depends="-init-deps,compile-nodeps,-init-java"
     description="Netbeans target">
         <fail unless="files">Must set property 'files'</fail>
-        <condition property="agentargs" value="${rtibuild.dir}/project/dist/rtibuild_1_0.jar" else="">
+        <condition property="agentargs" value="${rti.build.home}/project/dist/rtibuild_1_0.jar" else="">
             <istrue value="${use.reload.agent}"/>
         </condition>
         <pathconvert property="agentargs.converted">
@@ -44,7 +44,7 @@ these targets.
     </target>
     
     <target name="-redefine" depends="-init" description="Netbeans target">
-        <taskdef name="redefine" classpath="${rtibuild.dir}/project/dist/rtibuild_1_0.jar" classname="rti.build.ant.ReloadTask"/>
+        <taskdef name="redefine" classpath="${rti.build.home}/project/dist/rtibuild_1_0.jar" classname="rti.build.ant.ReloadTask"/>
         <collectproducts/>
         <redefine projectDeps="${collected.product.deps}"/>
     </target>
