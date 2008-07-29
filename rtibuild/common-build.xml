@@ -7,14 +7,6 @@ located in conf
     
     <import file="common.xml"/>
     
-    <target name="-init-build" depends="-init">
-        <property name="java.main.vmargs" value="" description="VM arguments to pass to java during execution"/>
-        <property name="java.main.cwd" value="${basedir}" description="The current working directory to run with"/>
-        <property name="java.main.class" value="undefined" description="The main class to run with"/>
-        <property name="coverage.dir" location="${test.dir}/coverage" description="emma coverage output directory"/>
-        <property name="emma.filter" value="rti.*, RTi.*" description="emma includes filter"/>
-    </target>
-    
     <target name="-pre-compile-java" description="hook target called before compilation"/>
     
     <target name="compile-nodeps" description="Compile java but do not compile dependencies" depends="-init">
@@ -90,7 +82,7 @@ located in conf
         <deps target="clean-all" products="${collected.product.deps}"/>
     </target>
     
-    <target name="test" description="Run all tests" depends="-init,-enable-emma,-check-tests,compile">
+    <target name="test" description="Run all tests" depends="-init,-check-tests,compile">
         <fail unless="tests.exist" message="No build file exists for this product - create one at ${test.dir}/build.xml"/>
         <ant antfile="${test.dir}/build.xml" target="all-tests" />
     </target>
@@ -128,22 +120,6 @@ located in conf
     </target>
     
     <target name="pre-release" description="Complete clean,build,test, and jar" depends="clean-deps,jar"/>
-    
-    <target name="-enable-emma" depends="-init-build">
-        <property name="emma.enabled" value="true" />
-        <mkdir dir="${coverage.dir}"/>
-    </target>
-    
-    <target name="-emma" depends="-init-build">
-        <emma enabled="${emma.enabled}" >
-            <instr instrpath="${build.dir}"
-                   destdir="${coverage.dir}/instr"
-                   metadatafile="${coverage.dir}/metadata.emma"
-                   merge="true">
-                       <filter includes="${emma.filter}"/>
-                       </instr>
-        </emma>
-    </target>
     
     <target name="profile" description="Netbeans profiler target" depends="-init-deps,compile">
         <fail unless="netbeans.home">This target can only run inside the NetBeans IDE.</fail>
