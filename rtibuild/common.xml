@@ -169,7 +169,7 @@
         <mkdir dir="${coverage.dir}"/>
     </target>
     
-    <target name="-emma" depends="-init-build">
+    <target name="-emma" depends="-init-build" unless="emma.disabled">
         <emma enabled="${emma.enabled}" >
             <instr instrpath="${build.dir}"
                    destdir="${coverage.dir}/instr"
