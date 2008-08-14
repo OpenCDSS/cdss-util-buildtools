@@ -4,6 +4,20 @@
         <fail message="no default target"/>
     </target>
     
+    <macrodef name="rsync-file">
+        <attribute name="src"/>
+        <attribute name="dest"/>
+        <element name="args" optional="true"/>
+        <sequential>
+            <exec executable="c://cygwin/bin/rsync.exe">
+                <arg value="-avz"/>
+                <args/>
+                <arg value="@{src}"/>
+                <arg value="@{dest}"/>
+            </exec>
+        </sequential>
+    </macrodef>
+    
     <macrodef name="rsync-ssh">
         <attribute name="src"/>
         <attribute name="dest"/>
