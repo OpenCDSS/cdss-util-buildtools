@@ -29,7 +29,7 @@ located in conf
     </target>
     
     <target name="compile" description="Compile product and all dependencies, including tests" depends="-init,-pre-compile-java,-init-javac,-compile-deps,-compile-java,-emma,-check-tests,-compile-tests" >
-        <echo level="verbose">compiling ${product.name}</echo>
+        <echo level="verbose">compiling ${product.name} emma-disabled:${emma.disabled}</echo>
         <copy todir="${build.dir}">
             <fileset dir="${src.dir}" includes="${jar.includes}" excludes="${default.jar.excludes}" />
         </copy>
@@ -96,6 +96,7 @@ located in conf
     </target>
     
     <target name="-compile-tests" description="foo" depends="-check-tests" if="tests.exist">
+        <!-- todo figure out way to pass emma.disabled through to here -->
         <ant antfile="${test.dir}/build.xml" target="build-all-tests"/>
     </target>
     
