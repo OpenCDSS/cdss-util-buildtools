@@ -44,7 +44,7 @@ def svn(*args):
   p = os.popen(cmd)
   output = filter(lambda line: len(line) and line or None, (i[:-1] for i in p))
   if p.close():
-    raise Exception("Error executing '" + cmd + "',\n" + output)
+    raise Exception("Error executing '%s',\n%s" % (cmd,output))
   return output
 
 def makedict(lines,split=None):
@@ -59,7 +59,9 @@ def makedict(lines,split=None):
 
 def getExternals(productDir):
   """Return a list of externals for a directory"""
-  return makedict(svn("propget","svn:externals",productDir))
+  externals = makedict(svn("propget","svn:externals",productDir))
+  debug("externals",externals)
+  return externals
 
 def svnInfo(dir,quiet = 0):
   """Return a dict of svn info on the given directory"""
@@ -81,6 +83,7 @@ def locateTags(externals):
   locations = ("tags","java_142/tags")
   for local,remote in externals.items():
     root = svnInfo(local)["Repository Root"]
+    debug("locateTags.root",root)
     for loc in locations:
       test = root + "/" + loc 
       if remoteDirExists(test):
@@ -99,6 +102,7 @@ def tagExternals(externals,tag,message,dry):
   """Find all externals, tag them and create a tag for the
   release"""
   tags = locateTags(externals)
+  debug("tags",tags)
   missing = set(externals.keys()) - set(tags.keys())
   if missing: 
     print "unable to locate all tags : "
