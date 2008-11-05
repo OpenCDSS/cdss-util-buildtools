@@ -2,8 +2,10 @@
 <project name="rti-common-test" default="-fail">
     
     <import file="common.xml"/>
+
+    <!-- @todo call -enable-emma for unit/operational/regression tests  -->
     
-    <target name="-init-tests" depends="-init-deps,-init-build,-enable-emma">
+    <target name="-init-tests" depends="-init-deps,-init-build">
         <property file="${test.dir}/test-user.properties"/>
         <property file="${test.dir}/test.properties"/>
         <available property="unit.exists" file="${test.dir}/unit/src"/>
@@ -42,7 +44,7 @@
         <runtests type=""/>
     </target>
     
-    <target name="build-all-tests" depends="-init-tests,-enable-emma">
+    <target name="build-all-tests" depends="-init-tests">
         <build-tests type=""/>
     </target>
     
