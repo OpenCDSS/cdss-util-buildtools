@@ -4,7 +4,11 @@ import sys,os
 import optparse
 import time
 
-_debug=1
+_debug=0
+
+def colorize(out):
+    # 32 = color, 1 = bold, 4 = underline
+    return '\033[32;1;4m%s\033[m' % out
  
 def checkExternals(productDir):
   """Check a top level product dir to see if the externals are
@@ -90,6 +94,12 @@ def locateTags(externals):
         tags[local] = test 
         break;
   return tags
+
+def checkOutEmpty(url,dest):
+  svn("co","--depth","empty",url,dest)
+
+def setExternals(path,externals):
+  svn("propset","svn:externals",externals,path)
 
 def makeTag(src,dest,message):
   """Create a tag in the repository 'dest', copying from 'src'"""
