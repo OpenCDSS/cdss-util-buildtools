@@ -8,7 +8,14 @@ these targets.
 <project name="rti-common-nb" default="-fail">
     
     <import file="common-build.xml"/>
-    
+
+    <target name="-debug-main">
+        <antcall target="-debug-selected-files" inheritall="true">
+            <param name="classname" value="${java.main.class}"/>
+            <param name="debug.args" value="${java.main.args}"/>
+        </antcall>
+    </target>
+
     <target name="-run-selected-file" depends="-init-deps,compile-nodeps,-init-java"
     description="Netbeans target">
         <fail unless="files">Must set property 'files'</fail>
@@ -51,6 +58,7 @@ these targets.
     
     <target name="-debug-selected-files" depends="-init-deps,-init-java" if="netbeans.home" description="Netbeans target">
         <fail unless="classname">Must set property 'classname'</fail>
+        <property name="debug.args" value=""/>
         <pathconvert property="src.paths">
             <chainedmapper>
                 <flattenmapper/>
@@ -64,7 +72,7 @@ these targets.
             <classpath path="${run.classpath.computed}:${debug.classpath}"/>
             <sourcepath path="${src.paths}"/>
         </nbjpdastart>
-        <runjava main="${classname}" cp="${run.classpath.computed}">
+        <runjava main="${classname}" cp="${run.classpath.computed}" args="${debug.args}">
             <vmargs>
                 <jvmarg value="-Xdebug"/>
                 <jvmarg value="-Xnoagent"/>
