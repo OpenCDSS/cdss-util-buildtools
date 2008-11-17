@@ -166,14 +166,15 @@
     </target>
     
     <target name="-init-java" depends="-init-jdk">
+        <property name="java.run.version" value="${java.src.version}"/>
         <condition property="jdk.run.home" value="${jdk.base.dir}/${java.142.name}">
-            <equals arg1="${java.src.version}" arg2="1.4" />
+            <equals arg1="${java.run.version}" arg2="1.4" />
         </condition>
         <condition property="jdk.run.home" value="${jdk.base.dir}/${java.150.name}">
-            <equals arg1="${java.src.version}" arg2="1.5" />
+            <equals arg1="${java.run.version}" arg2="1.5" />
         </condition>
         <condition property="jdk.run.home" value="${jdk.base.dir}/${java.160.name}">
-            <equals arg1="${java.src.version}" arg2="1.6" />
+            <equals arg1="${java.run.version}" arg2="1.6" />
         </condition>
         <property name="java.exe" value="${jdk.run.home}/bin/java" description="The java executable to use when executing"/>
     </target>
