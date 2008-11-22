@@ -11,7 +11,7 @@
         <property name="exe.version" value="${product.version}" description="the n.n.n.n version to place in the exe file"/>
         <property name="nsis.version" value="${exe.version}" description="the version to use in the nsis installer setup.exe and other locations (menu,etc)"/>
         <property name="license.file" value="" description="if set, the license file to copy into local install"/>
-        <property name="exe.jre" value="${rti.jre.version}" description="the name of the jre version (142,150) for install"/>
+        <property name="exe.jre" value="${rti.jre.version}" description="the name of the jre version (142,150,16) for install"/>
         <property name="app.home.token" value="rti.app.home" description="the name of the system property passed by the executable to java that holds the location of the install"/>
         <property name="installer.icon" value="${product.icon}"/>
         <isPropertySet name="license.file"/>
