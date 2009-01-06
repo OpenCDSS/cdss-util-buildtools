@@ -263,7 +263,7 @@
                     <attribute name="Specification-Title" value="${product.name}" />
                     <attribute name="Specification-Version" value="${product.version}" />
                     <attribute name="Specification-Vendor" value="Riverside Technology Inc." />
-                    <attribute name="Implementation-Version" value="${product.version} ${DSTAMP}" />
+                    <attribute name="Implementation-Version" value="${DSTAMP}" />
                     <atts/>
                 </manifest>
                 <fileset dir="@{dir}" includes="@{includes}" excludes="@{excludes}"/>
