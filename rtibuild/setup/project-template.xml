@@ -188,8 +188,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">${build.classpath}
-                </classpath>
+                <classpath mode="compile">${build.classpath}</classpath>
                 <built-to>${build.dir}</built-to>
                 <built-to>${jar.file}</built-to>
                 <source-level>1.5</source-level>
@@ -197,8 +196,7 @@
             <compilation-unit>
                 <package-root>test/src</package-root>
                 <unit-tests/>
-                <classpath mode="compile">${test.classpath}
-                </classpath>
+                <classpath mode="compile">${test.classpath}</classpath>
                 <built-to>${test.build.dir}</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
