@@ -196,8 +196,11 @@
         <attribute name="defines" default=""/>
         <sequential>
             <available property="nsi.file.exists" file="@{dir}/@{nsi}"/>
+            <available property="jre.packed" file="${exe.jre}/lib/rt.pack.gz"/>
             <exec executable="@{exe}" failonerror="true">
                 <arg line="@{defines}"/>
+                <arg value="/DJRE_VERSION=${exe.jre}"/>
+                <arg value="/DJRE_PACKED=${jre.packed}"/>
                 <arg value="/NOCD"/> <!-- Do Not Change directory-->
                 <arg value="@{dir}/@{nsi}"/>
             </exec>
