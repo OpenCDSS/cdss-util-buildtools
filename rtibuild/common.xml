@@ -212,6 +212,10 @@
         <attribute name="name"/>
         <attribute name="message" default="The property @{name} must be defined."/>
         <sequential>
+            <condition property="@{name}.undefined">
+                <equals arg1="${@{name}}" arg2="undefined"/>
+            </condition>
+            <fail if="@{name}.undefined" message="@{message}"/>
             <fail unless="@{name}" message="@{message}"/>
         </sequential>
     </macrodef>
