@@ -16,6 +16,16 @@
         <property name="installer.icon" value="${product.icon}"/>
         <isPropertySet name="license.file"/>
         <isPropertySet name="java.main.class"/>
+        <condition property="java.min.version" value="1.4.2">
+            <equals arg1="${java.target.version}" arg2="1.4"/>
+        </condition>
+        <condition property="java.min.version" value="1.5.0">
+            <equals arg1="${java.target.version}" arg2="1.5"/>
+        </condition>
+        <condition property="java.min.version" value="1.6.0">
+            <equals arg1="${java.target.version}" arg2="1.6"/>
+        </condition>
+        <exe-version-check versionString="${exe.version}" propertyName="exe.version"/>
     </target>
     
     <target name="exe" description="generate an executable using launch4j" depends="-standard-exe"/>
@@ -84,13 +94,6 @@
     </target>
     
     <target name="-standard-exe" if="java.main.class.isset" depends="-init-installer">
-        <condition property="java.min.version" value="1.4.2">
-            <equals arg1="${java.target.version}" arg2="142"/>
-        </condition>
-        <condition property="java.min.version" value="1.5.0">
-            <equals arg1="${java.target.version}" arg2="150"/>
-        </condition>
-        <exe-version-check versionString="${exe.version}" propertyName="exe.version"/>
         <launch4j-exe/>
     </target>
     
@@ -138,7 +141,7 @@
         <attribute name="productIcon" default="${installer.icon}"/>
         <attribute name="jreName" default="${exe.jre}"/>
         <attribute name="preferredHeapSize" default="${preferred.heap.size}"/>
-        <attribute name="minVersion" default="1.4.2"/>
+        <attribute name="minVersion" default="${java.min.version}"/>
         <attribute name="homeToken" default="${app.home.token}"/>
         <element name="chdir" optional="true"/>
         <element name="opts" optional="true"/>
