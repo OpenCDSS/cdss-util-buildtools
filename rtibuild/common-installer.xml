@@ -14,6 +14,9 @@
         <property name="exe.jre" value="${rti.jre.version}" description="the name of the jre version (142,150,16) for install"/>
         <property name="app.home.token" value="rti.app.home" description="the name of the system property passed by the executable to java that holds the location of the install"/>
         <property name="installer.icon" value="${product.icon}"/>
+        <condition property="license.file.isset" value="true">
+            <isset property="license.skip"/>
+        </condition>
         <isPropertySet name="license.file"/>
         <isPropertySet name="java.main.class"/>
         <condition property="java.min.version" value="1.4.2">
@@ -81,7 +84,7 @@
         <standard-local-install installDir="${install.dir}"/>
     </target>
     
-    <target name="-install-license" if="license.file.isset"> 
+    <target name="-install-license" if="license.file.isset" unless="license.skip">
         <!--
         <condition property="fail.on.missing.license" value="false" else="true">
             <equals arg1="${license.file}" arg2="none"/>
