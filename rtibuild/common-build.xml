@@ -57,7 +57,9 @@ located in conf
     
     <target name="clean" description="Clean class files and jar file, including tests" depends="-init">
         <delete dir="${build.dir}" quiet="true" />
-        <delete file="${dist.dir}/${jar.name}" quiet="true" />
+        <delete quiet="true">
+            <fileset dir="${dist.dir}" includes="*.jar"/>
+        </delete>
         <delete dir="${test.build.dir}" quiet="true" />
         <delete dir="${coverage.dir}" quiet="true" />
     </target>
