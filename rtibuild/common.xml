@@ -196,7 +196,7 @@
     </target>
     
     <target name="-init-build" depends="-init">
-        <property name="java.main.vmargs" value="" description="VM arguments to pass to java during execution"/>
+        <property name="java.main.vmargs" value="" description="VM arguments to pass to java during development execution"/>
         <property name="java.main.cwd" value="${basedir}" description="The current working directory to run with"/>
         <property name="java.main.class" value="undefined" description="The main class to run with"/>
         <property name="coverage.dir" location="${test.dir}/coverage" description="emma coverage output directory"/>
