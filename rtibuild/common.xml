@@ -67,7 +67,7 @@
         <property name="emma.filter" value="rti.*, RTi.*" description="emma includes filter"/>
         
         <!-- computed properties-->
-        <property name="jar.includes" value="**/*.png,**/*.gif,**/*.jpg,**/*.class/,**/*.properties,META-INF/**/*,${jar.extra.includes}" />
+        <property name="jar.includes" value="**/*.png,**/*.gif,**/*.jpg,**/*.ico,**/*.class/,**/*.properties,META-INF/**/*,${jar.extra.includes}" />
         <property name="jar.name" value="${product.name}_${product.version}.jar" />
         <property name="jar.file" value="${dist.dir}/${jar.name}"/>
         
@@ -257,6 +257,7 @@
         <attribute name="compress" default="false" />
         <attribute name="mainClass" default="${java.main.class}"/>
         <element name="zipfiles" optional="true"/>
+        <element name="other" optional="true"/>
         <element name="atts" optional="true"/>
         <sequential>
             <tstamp />
@@ -271,6 +272,7 @@
                     <atts/>
                 </manifest>
                 <fileset dir="@{dir}" includes="@{includes}" excludes="@{excludes}"/>
+                <other/>
                 <zipfiles/>
             </jar>
         </sequential>
