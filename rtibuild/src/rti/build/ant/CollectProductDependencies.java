@@ -9,6 +9,7 @@ package rti.build.ant;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,7 +59,30 @@ public class CollectProductDependencies extends Task {
         List sorted = topologicalSort(projectDeps);
         // remove this from the dependencies
         sorted.remove(getProject().getBaseDir());
+
         return sorted;
+    }
+
+    static String format(Map deps) {
+        StringBuffer b = new StringBuffer();
+        Iterator i = deps.entrySet().iterator();
+        while (i.hasNext()) {
+            Map.Entry e = (Map.Entry) i.next();
+            b.append( ((File)e.getKey()).getName() ).append(':').append(format((List) e.getValue()));
+            if (i.hasNext()) {
+                b.append("\n");
+            }
+        }
+        return b.toString();
+    }
+
+    static String format(List files) {
+        StringBuffer b = new StringBuffer();
+        for (int i = 0; i < files.size(); i++) {
+            b.append( ((File) files.get(i)).getName() );
+            if (i + 1 < files.size()) {b.append(",");}
+        }
+        return b.toString();
     }
     
     protected String buildPath(Collection stuff) {
@@ -103,7 +127,11 @@ public class CollectProductDependencies extends Task {
         }
         String[] productPaths = depsString.split(",");
         for (int i = 0; i < productPaths.length; i++) {
-            File product = new File(projectDir,productPaths[i]).getCanonicalFile();
+            String path = productPaths[i].trim();
+            if (path.length() == 0) {
+                continue;
+            }
+            File product = new File(projectDir,path).getCanonicalFile();
             depList.add(product);
             if (visited.add(product)) {
                 loadProperties(product);
@@ -122,7 +150,7 @@ public class CollectProductDependencies extends Task {
         return cloned;
     }
     
-    private List topologicalSort(Map/*<File,List<File>>*/ depMap) {
+    private List/*<File>*/ topologicalSort(Map/*<File,List<File>>*/ depMap) {
         Map projectDeps = deepClone(depMap);
         List sorted = new ArrayList();
         LinkedList q = new LinkedList();
@@ -130,6 +158,7 @@ public class CollectProductDependencies extends Task {
         for (Iterator it = projectDeps.keySet().iterator(); it.hasNext();) {
             Object project = it.next();
             processed.add(project);
+            // check for projects with single dependency (themselves) and seed topology tree
             if ( ((List)projectDeps.get(project)).size() == 0) {
                 q.add(project);
             }
