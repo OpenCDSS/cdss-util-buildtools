@@ -28,9 +28,14 @@ public class CollectJarDependencies extends CollectProductDependencies {
     private String refID;
     boolean useBuildDirs = false;
     private String excludes;
+    private String includes;
 
     public void setExcludes(String excludes) {
         this.excludes = excludes;
+    }
+
+    public void setIncludes(String includes) {
+        this.includes = includes;
     }
 
     public void setUseBuildDirs(boolean useBuildDirs) {
@@ -87,8 +92,12 @@ public class CollectJarDependencies extends CollectProductDependencies {
         jars.add(thisProductJar);
         loadProperties(thisProductDir);
         addJars(jars, jarNames, thisProductDir);
+        Set includes = this.includes == null ? null : new HashSet(Arrays.asList(this.includes.split("[ ,]")));
         for (Iterator it = products.iterator(); it.hasNext();) {
             File dep = (File) it.next();
+            if (includes != null && !includes.contains(dep.getName())) {
+                continue;
+            }
             loadProperties(dep);
             addJars(jars, jarNames, dep);
             String depName = dep.getName();
