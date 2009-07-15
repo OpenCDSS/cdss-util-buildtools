@@ -15,8 +15,8 @@ located in conf
     </target>
     
     <target name="-compile-deps" if="product.deps" unless="nodeps">
-        <echo level="verbose">compiling deps for ${product.name} : ${product.deps}</echo>
         <collectproducts separator="," property="collected.product.deps"/>
+        <echo level="verbose">compiling deps for ${product.name} : ${collected.product.deps}</echo>
         <deps target="compile" products="${collected.product.deps}"/>
     </target>
     
@@ -114,7 +114,9 @@ located in conf
     </target>
     
     <target name="jar-deps" description="Build all dependency jars" depends="-init">
-        <deps target="jar" products="${product.deps}"/>
+        <collectproducts separator="," property="collected.product.deps"/>
+        <echo level="verbose">compiling deps for ${product.name} : ${collected.product.deps}</echo>
+        <deps target="jar" products="${collected.product.deps}"/>
         <antcall target="jar-no-deps"/>
     </target>
     
