@@ -17,6 +17,17 @@
             </exec>
         </sequential>
     </macrodef>
+
+    <macrodef name="scp">
+        <attribute name="dest"/>
+        <element name="args" optional="true"/>
+        <sequential>
+            <exec executable="c://cygwin/bin/scp.exe">
+                <args/>
+                <arg value="@{dest}"/>
+            </exec>
+        </sequential>
+    </macrodef>
     
     <macrodef name="rsync-ssh">
         <attribute name="src"/>
