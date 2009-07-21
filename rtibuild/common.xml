@@ -47,6 +47,7 @@
         <property name="java.target.version" value="1.4" description="The java byte code target level to pass to the compiler"/>
         <property name="javac.includes" value="**/*.java" description="Files to include in compilation"/>
         <property name="javac.excludes" value="" description="Files to exclude from compilation"/>
+        <property name="javac.encoding" value="ISO-8859-1" description="Charset to pass to javac"/>
         <property name="ext.dir" value="externals" description="The directory for externals with contents defined by svn:externals"/>
         <property name="src.dir" value="src" description="The directory for source code"/>
         <property name="graphics.dir" value="graphics" description="The directory for graphics resources"/>
@@ -143,6 +144,9 @@
             <os family="unix"/>
         </condition>
         <condition property="java.150.name" value="jdk1.5.0">
+            <os family="unix"/>
+        </condition>
+        <condition property="java.160.name" value="jdk1.6">
             <os family="unix"/>
         </condition>
         <!-- defaults - if the above don't apply, these will -->
@@ -308,6 +312,7 @@
     <macrodef name="javacompile">
         <attribute name="includes" default="${javac.includes}" />
         <attribute name="excludes" default="${javac.excludes}" />
+        <attribute name="encoding" default="${javac.encoding}" />
         <attribute name="src" />
         <attribute name="source" default="${java.src.version}" />
         <attribute name="target" default="${java.target.version}" />
@@ -325,7 +330,8 @@
                    includes="@{includes}" excludes="@{excludes}" 
                    destdir="@{dest}" debug="@{debug}" deprecation="@{deprecation}" 
                    executable="@{executable}" includeAntRuntime="@{useant}" 
-                   fork="@{fork}" failonerror="@{failOnError}">
+                   fork="@{fork}" failonerror="@{failOnError}"
+                   encoding="@{encoding}">
                 <classpath>
                     <path path="@{cp}" />
                 </classpath>
