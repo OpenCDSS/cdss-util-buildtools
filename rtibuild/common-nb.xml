@@ -28,7 +28,7 @@ these targets.
         <condition property="vmarg" value="-javaagent:${agentargs.converted}" else="">
             <istrue value="${use.reload.agent}"/>
         </condition>
-        <runjava main="${files}" cp="${run.classpath.computed}">
+        <runjava main="${files}" cp="${run.classpath.computed}:${additional.cp}">
             <vmargs>
                 <!--
                 <jvmarg value="-Dcom.sun.management.jmxremote"/>
