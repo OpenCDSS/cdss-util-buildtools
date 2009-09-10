@@ -11,7 +11,7 @@ Don't import this, call it instead.
         <input message="Enter name of project" addproperty="project.name"/>
         <property name="project.dir" location="${projects.dir}/${project.name}"/>
         <available property="project.exists" file="${project.dir}/nbproject"/>
-        <fail if="project.exists" message="${project.dir} already exists"/>
+        <antcall target="-prompt" inheritall="true"/>
         <echo>Generating project in ${project.dir}</echo>
         
         <mkdir dir="${project.dir}"/>
@@ -31,6 +31,11 @@ Don't import this, call it instead.
         <template src="dot-classpath-template.xml" dest=".classpath"/>
         <template src="dot-project-template.xml" dest=".project"/>
         
+    </target>
+
+    <target name="-prompt" if="project.exists">
+        <input message="Overwrite existing files?" addproperty="project.overwrite"/>
+        <fail unless="project.overwrite" message="not overwriting project"/>
     </target>
     
     <macrodef name="template">
