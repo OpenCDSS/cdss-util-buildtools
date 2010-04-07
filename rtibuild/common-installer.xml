@@ -14,6 +14,8 @@
         <property name="exe.jre" value="${rti.jre.version}" description="the name of the jre version (142,150,16) for install"/>
         <property name="app.home.token" value="rti.app.home" description="the name of the system property passed by the executable to java that holds the location of the install"/>
         <property name="installer.icon" value="${product.icon}"/>
+        <property name="zip.prefix" value="${product.name}-${product.version}"/>
+        <property name="zip.name" value="${dist.dir}/${zip.prefix}.zip"/>
         <condition property="license.file.isset" value="true">
             <isset property="license.skip"/>
         </condition>
@@ -74,6 +76,25 @@
         <fail unless="license.owner" message="Must define 'license.owner' property"/>
         <fail unless="license.type" message="Must define 'license.type' property"/>
         <genlicense owner="${license.owner}" type="${license.type}"/>
+    </target>
+
+    <target name="zip-dist" depends="local-install,-zip-dist" description="create zip dist"/>
+    <target name="zip-dist-no-jre" depends="local-install,-zip-dist-no-jre" description="create zip dist"/>
+    <target name="zip-dist-no-deps" depends="local-install-no-deps,-zip-dist" description="create zip dist"/>
+    <target name="zip-dist-no-deps-no-jre" depends="local-install-no-deps,-zip-dist-no-jre" description="create zip dist"/>
+
+    <target name="-zip-dist">
+        <zip destfile="${zip.name}">
+            <zipfileset dir="${install.dir}" prefix="${zip.prefix}"/>
+        </zip>
+    </target>
+    
+    <target name="-zip-dist-no-jre">
+        <zip destfile="${zip.name}">
+            <zipfileset dir="${install.dir}" prefix="${zip.prefix}">
+                <exclude name="jre*/**"/>
+            </zipfileset>
+        </zip>
     </target>
     
     <target name="-local-install" depends="-init-installer,-standard-local-install,-standard-exe,-install-jre,install-license,-install-local"/>
@@ -145,6 +166,7 @@
         <attribute name="preferredHeapSize" default="${preferred.heap.size}"/>
         <attribute name="minVersion" default="${java.min.version}"/>
         <attribute name="homeToken" default="${app.home.token}"/>
+        <attribute name="headerType" default="gui"/>
         <element name="chdir" optional="true"/>
         <element name="opts" optional="true"/>
         <element name="args" optional="true"/>
@@ -154,7 +176,7 @@
             <exe-version-check versionString="${exe.version}" propertyName="exe.version"/>
             <echoxml file="${dist.dir}/launch4j.xml">
                 <launch4jConfig>
-                    <headerType>0</headerType>
+                    <headerType>@{headerType}</headerType>
                     <outfile>@{exe}.exe</outfile>
                     <jar>${jar.name}</jar>
                     <stayAlive>true</stayAlive>
