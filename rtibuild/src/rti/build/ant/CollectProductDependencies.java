@@ -52,7 +52,8 @@ public class CollectProductDependencies extends Task {
     protected Collection getDeps() {
         String depsString = getProject().getProperty("product.deps");
         try {
-            collectDeps(getProject().getBaseDir(),depsString);
+            File baseDir = getProject().getBaseDir();
+            collectDeps(baseDir,depsString);
         } catch (IOException ioe) {
             throw new BuildException(ioe);
         }
@@ -132,11 +133,13 @@ public class CollectProductDependencies extends Task {
                 continue;
             }
             File product = new File(projectDir,path).getCanonicalFile();
-            depList.add(product);
-            if (visited.add(product)) {
-                loadProperties(product);
-                String deps = getProject().getProperty(product.getName() + ".product.deps");
-                collectDeps(product,deps);
+            if (product.exists()) {
+                depList.add(product);
+                if (visited.add(product)) {
+                    loadProperties(product);
+                    String deps = getProject().getProperty(product.getName() + ".product.deps");
+                    collectDeps(product,deps);
+                }
             }
         }
     }
