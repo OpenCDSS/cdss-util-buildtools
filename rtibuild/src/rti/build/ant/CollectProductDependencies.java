@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Property;
 
@@ -114,10 +115,14 @@ public class CollectProductDependencies extends Task {
     protected void loadProperties(File productDir) throws BuildException {
         Property load = new Property();
         File toLoad = new File(productDir,"/conf/product.properties");
+        Project x = new Project();
         load.setFile(toLoad);
-        load.setProject(getProject());
+        load.setProject(x);
         load.setPrefix(productDir.getName());
         load.execute();
+        for (Object o : x.getProperties().keySet()) {
+            getProject().setProperty(o.toString(), (String) x.getProperties().get(o));
+        }
     }
     
     private void collectDeps(File projectDir,String depsString) throws IOException {
@@ -140,6 +145,8 @@ public class CollectProductDependencies extends Task {
                     String deps = getProject().getProperty(product.getName() + ".product.deps");
                     collectDeps(product,deps);
                 }
+            } else {
+                System.err.println(product + " doesn't exist");
             }
         }
     }
