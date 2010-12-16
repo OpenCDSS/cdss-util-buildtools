@@ -171,7 +171,6 @@
         <element name="opts" optional="true"/>
         <element name="args" optional="true"/>
         <sequential>
-            <exe-version-check versionString="@{exeVersion}" propertyName="exeVersion"/>
             <property name="full.icon.path" location="@{productIcon}"/>
             <exe-version-check versionString="${exe.version}" propertyName="exe.version"/>
             <echoxml file="${dist.dir}/launch4j.xml">
