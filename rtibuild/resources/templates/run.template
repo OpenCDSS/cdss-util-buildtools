@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Get the class name of a .java file
 function classname {
@@ -25,6 +25,8 @@ if [ $cygwin ]; then
   CP="@cygpath@"
 else
   CP="@run.classpath.computed@"
+  CP=${//\\//}
+  CP=${//;/:}
 fi
 
 java="${java-"@java.exe@"}"
