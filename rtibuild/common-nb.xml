@@ -72,7 +72,7 @@ these targets.
             <classpath path="${run.classpath.computed}:${debug.classpath}"/>
             <sourcepath path="${src.paths}"/>
         </nbjpdastart>
-        <runjava main="${classname}" cp="${run.classpath.computed}" args="${debug.args}">
+        <runjava main="${classname}" cp="${run.classpath.computed}">
             <vmargs>
                 <jvmarg value="-Xdebug"/>
                 <jvmarg value="-Xnoagent"/>
