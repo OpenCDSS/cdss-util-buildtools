@@ -139,7 +139,7 @@
             <mkdir dir="@{installDir}/logs"/>
             
             <collectjars refid="collected.jar.files" excludes="${product.disabled.jars},${local.install.disabled.jars}"/>
-            <copy todir="@{installDir}/bin" flatten="true">
+            <copy todir="@{installDir}/bin" flatten="true" failonerror="false">
                 <path refid="collected.jar.files"/>
             </copy>
         </sequential>
