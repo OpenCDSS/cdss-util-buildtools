@@ -65,7 +65,7 @@
         <property name="java.main.vmargs" value="-Dfoo=bar" description="VM arguments, contains default bogus value to work around linux java/ant launcher bug"/>
 
         <property name="default.jar.excludes" value="**/*.svn,${jar.excludes}" description="The default excludes - do not change this - instead change jar.excludes"/>
-        <property name="product.icon" value="${rti.build.home}/resources/RTi.ico" description="The product icon used in installers, exe, etc."/>
+        <property name="product.icon" value="${rti.build.home}/resources/graphics/Riverside.ico" description="The product icon used in installers, exe, etc."/>
         <property name="coverage.dir" location="${test.dir}/coverage" description="emma coverage output directory"/>
         <property name="emma.filter" value="rti.*, RTi.*" description="emma includes filter"/>
         
@@ -345,8 +345,8 @@
         <attribute name="main" />
         <attribute name="cp" />
         <attribute name="dir" default="${basedir}"/>
-        <attribute name="args" default="" />
         <element name="vmargs" optional="true"/>
+        <element name="args" optional="true"/>
         <sequential>
             <echo>@{cp} @{main}</echo>
             <java classname="@{main}" fork="true" jvm="${java.exe}" dir="@{dir}">
@@ -356,7 +356,7 @@
                 <classpath>
                     <path path="@{cp}" />
                 </classpath>
-                <arg line="@{args}" />
+                <args/>
             </java>
         </sequential>
     </macrodef>
