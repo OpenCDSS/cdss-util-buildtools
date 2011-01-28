@@ -30,7 +30,7 @@ located in conf
             <fileset dir="${src.dir}" includes="${jar.includes}" excludes="${default.jar.excludes}" />
         </copy>
         <condition property="no.graphics">
-            <not><available file="graphics"/></not>
+            <not><available file="${graphics.dir}"/></not>
         </condition>
         <antcall target="-copy-graphics"/>
     </target>
@@ -100,16 +100,17 @@ located in conf
     
     <target name="run" description="Run java.main.class as defined in product" depends="-init-deps,-init-java,-init-build">
         <requireprop name="java.main.class" />
-        <runjava main="${java.main.class}" cp="${run.classpath.computed}" args="${java.main.args}" dir="${java.main.cwd}">
+        <runjava main="${java.main.class}" cp="${run.classpath.computed}" dir="${java.main.cwd}">
             <vmargs><jvmarg value="${java.main.vmargs}"/></vmargs>
+            <args line="${java.main.args}" />
         </runjava>
     </target>
     
-    <target name="jar" description="Create product jar from name and version" depends="compile">
+    <target name="jar" description="Create product jar from name and version" depends="compile" unless="jar.skip">
         <dojar jar="${jar.name}" />
     </target>
     
-    <target name="jar-no-deps" description="Create jar without calling deps" depends="compile-nodeps">
+    <target name="jar-no-deps" description="Create jar without calling deps" depends="compile-nodeps" unless="jar.skip">
         <dojar jar="${jar.name}" />
     </target>
     
