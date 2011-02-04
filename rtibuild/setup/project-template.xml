@@ -123,6 +123,11 @@
                     <script>${ant.script}</script>
                     <target>-redefine</target>
                 </action>
+                <action name="debug">
+                    <script>${ant.script}</script>
+                    <target>-debug-selected-files</target>
+                    <property name="classname">${java.main.class}</property>
+                </action>
                 <action name="debug.test.single">
                     <script>${ant.script}</script>
                     <target>-debug-test-single</target>
