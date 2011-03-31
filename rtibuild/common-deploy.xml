@@ -32,11 +32,12 @@
     <macrodef name="rsync-ssh">
         <attribute name="src"/>
         <attribute name="dest"/>
+        <attribute name="port" default="22"/>
         <element name="args" optional="true"/>
         <sequential>
             <exec executable="c://cygwin/bin/rsync.exe">
                 <arg value="-avz"/>
-                <arg value="-e 'c://cygwin/bin/ssh.exe'"/>
+                <arg value="-e 'c://cygwin/bin/ssh.exe -p @{port}'"/>
                 <args/>
                 <arg value="@{src}"/>
                 <arg value="@{dest}"/>
