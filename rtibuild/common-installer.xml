@@ -12,6 +12,7 @@
         <property name="nsis.version" value="${exe.version}" description="the version to use in the nsis installer setup.exe and other locations (menu,etc)"/>
         <property name="license.file" value="" description="if set, the license file to copy into local install"/>
         <property name="exe.jre" value="${rti.jre.version}" description="the name of the jre version (142,150,16) for install"/>
+        <property name="exe.jre.path" value="..\\jre_${exe.jre}" description="the relative path from exe to jre"/>
         <property name="app.home.token" value="rti.app.home" description="the name of the system property passed by the executable to java that holds the location of the install"/>
         <property name="installer.icon" value="${product.icon}"/>
         <property name="zip.prefix" value="${product.name}-${product.version}"/>
@@ -138,10 +139,31 @@
             <mkdir dir="@{installDir}/system"/>
             <mkdir dir="@{installDir}/logs"/>
             
+            <gather-jars installDir="@{installDir}/bin"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="gather-jars" description="copy all jar dependencies to a directory">
+        <attribute name="installDir"/>
+        <sequential>
             <collectjars refid="collected.jar.files" excludes="${product.disabled.jars},${local.install.disabled.jars}"/>
             <copy todir="@{installDir}/bin" flatten="true" failonerror="false">
                 <path refid="collected.jar.files"/>
             </copy>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="sign-jars" description="sign jars">
+        <attribute name="jarDir"/>
+        <attribute name="keystore"/>
+        <attribute name="alias"/>
+        <attribute name="storepass"/>
+        <sequential>
+            <signjar alias="@{alias}" keystore="@{keystore}" storepass="@{storepass}">
+                <path>
+                    <fileset dir="@{jardir}" includes="**/*.jar"/>
+                </path>
+            </signjar>
         </sequential>
     </macrodef>
     
@@ -162,7 +184,7 @@
         <attribute name="exeVersion" default="${exe.version}"/>
         <attribute name="mainClass" default="${java.main.class}"/>
         <attribute name="productIcon" default="${installer.icon}"/>
-        <attribute name="jreName" default="${exe.jre}"/>
+        <attribute name="jrePath" default="${exe.jre.path}"/>
         <attribute name="preferredHeapSize" default="${preferred.heap.size}"/>
         <attribute name="minVersion" default="${java.min.version}"/>
         <attribute name="homeToken" default="${app.home.token}"/>
@@ -188,7 +210,7 @@
                         <cp>%EXEDIR%/*.jar</cp>	
                     </classPath>
                     <jre>
-                        <path>..\\jre_@{jreName}</path>
+                        <path>@{jrePath}</path>
                         <minVersion>@{minVersion}</minVersion>
                         <opt>-D@{homeToken}="%EXEDIR%"/..</opt>
                         <opts/>
