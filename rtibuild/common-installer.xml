@@ -147,7 +147,7 @@
         <attribute name="installDir"/>
         <sequential>
             <collectjars refid="collected.jar.files" excludes="${product.disabled.jars},${local.install.disabled.jars}"/>
-            <copy todir="@{installDir}/bin" flatten="true" failonerror="false">
+            <copy todir="@{installDir}" flatten="true" failonerror="false">
                 <path refid="collected.jar.files"/>
             </copy>
         </sequential>
