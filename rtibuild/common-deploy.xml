@@ -37,7 +37,7 @@
         <sequential>
             <exec executable="c://cygwin/bin/rsync.exe">
                 <arg value="-avz"/>
-                <arg value="-e 'c://cygwin/bin/ssh.exe -p @{port}'"/>
+                <arg line="-e 'c://cygwin/bin/ssh.exe -p @{port}'"/>
                 <args/>
                 <arg value="@{src}"/>
                 <arg value="@{dest}"/>
