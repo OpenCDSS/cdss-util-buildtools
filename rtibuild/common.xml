@@ -57,7 +57,8 @@
         <property name="dist.dir" value="dist" description="The name of a distributable directory"/>
         <property name="jdoc.dir" value="doc/javadoc" description="The name of a javadoc directory"/>
         <property name="nsis.dir" value="installer" description="The name of the nsis installer directory"/>
-        <property name="nsis.exe" value="S:\DEVELOP\NSIS\makensis.exe" description="The full path to the NSIS exe"/>
+        <!-- <property name="nsis.exe" value="S:\DEVELOP\NSIS\makensis.exe" description="The full path to the NSIS exe"/> -->
+    	<property name="nsis.exe" value="C:\DEVELOP\NSIS\makensis.exe" description="The full path to the NSIS exe"/>
         <property name="logs.dir" value="test/logs" />
         <property name="javac.debug" value="true" description="A flag to pass to javac for including debugging"/>
         <property name="jar.extra.includes" value="" description="A list of includes to use for adding to jars"/>
