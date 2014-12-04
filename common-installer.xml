@@ -8,6 +8,7 @@
         <property name="preferred.heap.size" value="256m" description="preferred vm heap size for exe launcher"/>
         <property name="install.name" value="install" description="the name of the local install folder within the dist directory"/>
         <property name="install.dir" value="${dist.dir}/${install.name}" description="the location of the local-install"/>
+    	<property name="exe.name" value="${exe.name}" description="the name of the exe file"/>
         <property name="exe.version" value="${product.version}" description="the n.n.n.n version to place in the exe file"/>
         <property name="nsis.version" value="${exe.version}" description="the version to use in the nsis installer setup.exe and other locations (menu,etc)"/>
         <property name="license.file" value="" description="if set, the license file to copy into local install"/>
@@ -123,7 +124,9 @@
     </target>
     
     <target name="-bootstrap-cipher" depends="-init">
+    	<!-- TODO SAM 2014-12-03 Don't think we need this anymore since TSTool.cfg does not include encrypted license
         <ant antfile="${rti.build.home}/externals/RTiCipher/conf/build.xml" dir="${rti.build.home}/externals/RTiCipher" target="jar"/>
+        -->
     </target>
     
     <macrodef name="standard-local-install" description="perform a local install for a 'standard' app">
@@ -181,7 +184,8 @@
     
     <macrodef name="launch4j-exe">
         <attribute name="destDir" default="${install.dir}/bin"/>
-        <attribute name="exe" default="${product.name}"/>
+        <!-- <attribute name="exe" default="${product.name}"/> -->
+    	<attribute name="exe" default="${exe.name}"/>
         <attribute name="exeVersion" default="${exe.version}"/>
         <attribute name="mainClass" default="${java.main.class}"/>
         <attribute name="productIcon" default="${installer.icon}"/>
@@ -224,7 +228,7 @@
                         <productVersion>@{exeVersion}</productVersion>
                         <txtProductVersion>${product.version}</txtProductVersion>
                         <productName>${product.name}</productName>
-                        <companyName>RTi</companyName>
+                        <companyName>Open Water Foundation</companyName>
                         <internalName>${product.name}</internalName>
                         <originalFilename>@{exe}.exe</originalFilename>
                     </versionInfo>

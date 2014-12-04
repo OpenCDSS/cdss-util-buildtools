@@ -58,7 +58,8 @@
         <property name="jdoc.dir" value="doc/javadoc" description="The name of a javadoc directory"/>
         <property name="nsis.dir" value="installer" description="The name of the nsis installer directory"/>
         <!-- <property name="nsis.exe" value="S:\DEVELOP\NSIS\makensis.exe" description="The full path to the NSIS exe"/> -->
-    	<property name="nsis.exe" value="C:\DEVELOP\NSIS\makensis.exe" description="The full path to the NSIS exe"/>
+    	<!-- <property name="nsis.exe" value="C:\DEVELOP\NSIS\makensis.exe" description="The full path to the NSIS exe"/> -->
+    	<property name="nsis.exe" value="C:\Program Files (x86)\NSIS\makensis.exe" description="The full path to the NSIS exe"/>
         <property name="logs.dir" value="test/logs" />
         <property name="javac.debug" value="true" description="A flag to pass to javac for including debugging"/>
         <property name="jar.extra.includes" value="" description="A list of includes to use for adding to jars"/>
@@ -127,7 +128,8 @@
         <property name="jre.142.name" value="jre_142" />
         <property name="jre.150.name" value="jre_150" />
         <property name="jre.160.name" value="jre_16" />
-        <property name="jre.base.dir" value="s:/DEVELOP/" description="The location to search for jres"/>
+        <!-- <property name="jre.base.dir" value="s:/DEVELOP/" description="The location to search for jres"/> -->
+    	<property name="jre.base.dir" value="C:/Program Files (x86)/Java/" description="The location to search for jres"/>
         <condition property="jre.src.dir" value="${jre.base.dir}/${jre.142.name}">
             <equals arg1="${java.src.version}" arg2="1.4"/> 
         </condition>
@@ -153,10 +155,14 @@
             <os family="unix"/>
         </condition>
         <!-- defaults - if the above don't apply, these will -->
-        <property name="jdk.base.dir" value="s:/DEVELOP/" description="The location to search for jdks"/>
+        <!-- Old default: <property name="jdk.base.dir" value="C:/DEVELOP/" description="The location to search for jdks"/> -->
+    	<!-- Use a default that matches standard Oracle isntall default -->
+    	<property name="jdk.base.dir" value="C:/Program Files (x86)/Java" description="The location to search for jdks"/>
         <property name="java.142.name" value="jdk_142" />
         <property name="java.150.name" value="jdk_150" />
-        <property name="java.160.name" value="jdk_16" />
+        <!-- Old default: <property name="java.160.name" value="jdk_16" /> -->
+    	<!-- New default matches standard Oracle JDK install -->
+    	<property name="java.160.name" value="jdk6" />
     </target>
     
     <target name="-init-javac" depends="-init-jdk">

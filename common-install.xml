@@ -14,7 +14,9 @@
 
 	<property name="nativejc"		 
 	   value="${ext.dir}/NativeJ/nativejc.exe" />
-	<property name="nsis.exe" value="S:\DEVELOP\NSIS\makensis.exe" />
+	<!-- TODO SAM 2014-12-03 Old default
+	<property name="nsis.exe" value="S:\DEVELOP\NSIS\makensis.exe" /> -->
+	<property name="nsis.exe" value="C:\Program Files (x86)\NSIS\makensis.exe" />
 	
 	<condition property="installJammer" value="${ext.dir}/InstallJammer/installjammer">
 		<and>

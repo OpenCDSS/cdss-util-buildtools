@@ -146,7 +146,7 @@ public class CollectProductDependencies extends Task {
                     collectDeps(product,deps);
                 }
             } else {
-                System.err.println("dependecy '" + product + "' imported from '" + projectDir.getName() + "' doesn't exist");
+                System.err.println("dependency '" + product + "' imported from '" + projectDir.getName() + "' doesn't exist");
             }
         }
     }
