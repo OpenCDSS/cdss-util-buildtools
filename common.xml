@@ -280,7 +280,7 @@
                     <attribute name="Built-By" value="${user.name}" />
                     <attribute name="Specification-Title" value="${product.name}" />
                     <attribute name="Specification-Version" value="${product.version}" />
-                    <attribute name="Specification-Vendor" value="Riverside Technology Inc." />
+                    <attribute name="Specification-Vendor" value="Open Water Foundation" />
                     <attribute name="Implementation-Version" value="${DSTAMP}" />
                     <atts/>
                 </manifest>
