@@ -114,7 +114,6 @@
 		<fileset dir="${ext.dir}/SatmonSysDMI" includes="**/*.jar" />
 		<fileset dir="${ext.dir}/TS_Services" includes="**/*.jar" />
 		<fileset dir="${ext.dir}" includes="**/Blowfish_142.jar" />
-		<fileset dir="${ext.dir}/shellcon" includes="**/shellcon.exe" />
 	</copy>
 	
 </target>
