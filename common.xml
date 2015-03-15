@@ -124,10 +124,18 @@
         <condition property="rti.jre.version" value="16">
             <equals arg1="${java.src.version}" arg2="1.6"/>
         </condition>
+        <condition property="rti.jre.version" value="17">
+            <equals arg1="${java.src.version}" arg2="1.7"/>
+        </condition>
+        <condition property="rti.jre.version" value="18">
+            <equals arg1="${java.src.version}" arg2="1.8"/>
+        </condition>
         <!-- defaults, if the above rules haven't set the jres, these will -->
         <property name="jre.142.name" value="jre_142" />
         <property name="jre.150.name" value="jre_150" />
         <property name="jre.160.name" value="jre_16" />
+    	<property name="jre.170.name" value="jre_17" />
+        <property name="jre.180.name" value="jre_18" />
         <!-- <property name="jre.base.dir" value="s:/DEVELOP/" description="The location to search for jres"/> -->
     	<property name="jre.base.dir" value="C:/Program Files (x86)/Java/" description="The location to search for jres"/>
         <condition property="jre.src.dir" value="${jre.base.dir}/${jre.142.name}">
@@ -138,6 +146,12 @@
         </condition>
         <condition property="jre.src.dir" value="${jre.base.dir}/${jre.160.name}">
             <equals arg1="${java.src.version}" arg2="1.6"/>
+        </condition>
+        <condition property="jre.src.dir" value="${jre.base.dir}/${jre.170.name}">
+            <equals arg1="${java.src.version}" arg2="1.7"/>
+        </condition>
+        <condition property="jre.src.dir" value="${jre.base.dir}/${jre.180.name}">
+            <equals arg1="${java.src.version}" arg2="1.8"/>
         </condition>
     </target>
     
@@ -154,6 +168,12 @@
         <condition property="java.160.name" value="jdk1.6">
             <os family="unix"/>
         </condition>
+        <condition property="java.170.name" value="jdk1.7">
+            <os family="unix"/>
+        </condition>
+        <condition property="java.180.name" value="jdk1.8">
+            <os family="unix"/>
+        </condition>
         <!-- defaults - if the above don't apply, these will -->
         <!-- Old default: <property name="jdk.base.dir" value="C:/DEVELOP/" description="The location to search for jdks"/> -->
     	<!-- Use a default that matches standard Oracle isntall default -->
@@ -163,6 +183,8 @@
         <!-- Old default: <property name="java.160.name" value="jdk_16" /> -->
     	<!-- New default matches standard Oracle JDK install -->
     	<property name="java.160.name" value="jdk6" />
+    	<property name="java.170.name" value="jdk7" />
+    	<property name="java.180.name" value="jdk8" />
     </target>
     
     <target name="-init-javac" depends="-init-jdk">
@@ -174,6 +196,12 @@
         </condition>
         <condition property="jdk.build.home" value="${jdk.base.dir}/${java.160.name}">
             <equals arg1="${java.src.version}" arg2="1.6" />
+        </condition>
+        <condition property="jdk.build.home" value="${jdk.base.dir}/${java.170.name}">
+            <equals arg1="${java.src.version}" arg2="1.7" />
+        </condition>
+        <condition property="jdk.build.home" value="${jdk.base.dir}/${java.180.name}">
+            <equals arg1="${java.src.version}" arg2="1.8" />
         </condition>
         <property name="javac.exe" value="${jdk.build.home}/bin/javac" description="The javac executable to use when forking"/>
     </target>
@@ -188,6 +216,12 @@
         </condition>
         <condition property="jdk.run.home" value="${jdk.base.dir}/${java.160.name}">
             <equals arg1="${java.run.version}" arg2="1.6" />
+        </condition>
+        <condition property="jdk.run.home" value="${jdk.base.dir}/${java.170.name}">
+            <equals arg1="${java.run.version}" arg2="1.7" />
+        </condition>
+        <condition property="jdk.run.home" value="${jdk.base.dir}/${java.180.name}">
+            <equals arg1="${java.run.version}" arg2="1.8" />
         </condition>
         <property name="java.exe" value="${jdk.run.home}/bin/java" description="The java executable to use when executing"/>
     </target>
@@ -344,6 +378,7 @@
                 <classpath>
                     <path path="@{cp}" />
                 </classpath>
+            	<compilerarg value="-XDignore.symbol.file"/>
             </javac>
         </sequential>
     </macrodef>
