@@ -2,12 +2,16 @@
 
 This repository contains tools used to build Colorado's Decision Support Systems (CDSS) Java software,
 used within Eclipse (and initially also NetBeans).
-The tools use Ant, NSIS, and Launch4J software to create software installers.
-**An alternative such as Maven may be used in the future.**
+The tools use Ant, NSIS, and Launch4J software to create software installers for Windows.
+The installers when run install the software in standard locations and configure
+the ***Start*** menu.
+**An alternative such as Maven may be used in the future;
+however, migrating to Maven will take some effort.**
 
-Enhancements to the build utilities usually occurs while developing an application such as TSTool.
+Although these utilities could be used for other software,
+they are not envisioned as general tools for any software.
+Enhancements to the build utilities usually occur while developing an application such as TSTool.
 
-This software is being migrated to an open source software project as part of the OpenCDSS project.
 See the following online resources:
 
 * [CDSS](http://cdss.state.co.us)
@@ -65,7 +69,9 @@ Repository dependencies fall into two categories as indicated below.
 
 ### Repository Dependencies for this Repository ###
 
-This library does not depend on other repositories.
+This library does not depend on other repositories
+Needed software components are saved in this repository
+to ensure compatibility.
 
 ### Repositories that Depend on this Repository ###
 
@@ -105,9 +111,8 @@ C:\Users\user\                               Windows user home folder (typical d
 ## Version ##
 
 A version for the tools is typically not defined.
-Instead, tags are used to cross-reference the library version with commit of application code such as TSTool.
+Instead, repository tags are used to cross-reference with a TSTool (or other software) commit.
 This allows checking out a version of the library consistent with an application version.
-This approach might need to change if the library is seen as an independent resource that is used by many third-party applications.
 
 ## Contributing ##
 
@@ -116,17 +121,15 @@ Contributions to this project can be submitted using the following options:
 1. Software developers with commit privileges can write to this repository
 as per normal OpenCDSS development protocols.
 2. Post an issue on GitHub with suggested change.  Provide information using the issue template.
-3. Email a development contact.
-4. Fork the repository, make changes, and do a pull request.
-Contents of the current master branch should be merged with the fork to minimize
-code review before committing the pull request.
+3. Fork the repository, make changes, and do a pull request.
+Contents of the current master branch should be merged with the pull request to minimize
+code review that is necessary.
 
 See also the [OpenCDSS / protocols](http://learn.openwaterfoundation.org/cdss-website-opencdss/) for each software application.
 
 ## License ##
 
-A license for the software is being determined as part of the OpenCDSS project.
-GPL 3.0 has been recommended.
+The software is licensed under GPL v3+.  See the [LICENSE.md](LICENSE.md) file.
 
 ## Contact ##
 
