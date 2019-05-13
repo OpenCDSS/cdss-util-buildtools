@@ -404,6 +404,7 @@ Function UninstallCDSS
     Delete /REBOOTOK $INSTDIR\bin\msbase.jar
     Delete /REBOOTOK $INSTDIR\bin\HydroBaseDMI_142.jar
     Delete /REBOOTOK $INSTDIR\bin\RTI_142.jar
+    Delete /REBOOTOK $INSTDIR\bin\shellcon.exe
     Delete /REBOOTOK $INSTDIR\system\DATAUNIT
     Delete /REBOOTOK $INSTDIR\system\cdss.cfg
     RmDir /r /REBOOTOK $INSTDIR\jre_142

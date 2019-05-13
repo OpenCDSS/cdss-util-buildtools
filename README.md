@@ -15,8 +15,8 @@ Enhancements to the build utilities usually occur while developing an applicatio
 See the following online resources:
 
 * [CDSS](http://cdss.state.co.us)
-* [OpenCDSS](http://learn.openwaterfoundation.org/cdss-website-opencdss/)
-* [TSTool Developer Documentation](http://learn.openwaterfoundation.org/cdss-app-tstool-doc-dev/) - example of application that uses these tools
+* [OpenCDSS](http://opencdss.state.co.us/) - main OpenCDSS website
+* [TSTool Developer Documentation](http://opencdss.state.co.us/tstool/latest/doc-dev/) - example of application that uses these tools
 
 The developer documentation and guidelines will be updated as the development environment is used in development.  See the following sections in this page:
 
@@ -79,10 +79,10 @@ The following repositories are known to depend on this repository:
 
 |**Repository**|**Description**|
 |----------------------------------------------------------------------------------------------------------------|----------------------------------------------------|
-|[`cdss-app-statedmi-main`](https://github.com/OpenWaterFoundation/cdss-app-statedmi-main)                       |Main StateDMI application code.|
-|[`cdss-app-tstool-main`](https://github.com/OpenWaterFoundation/cdss-app-tstool-main)                           |Main TSTool application code.|
-|StateView - repository is being finalized                                                                       |HydroBase database viewer.|
-|StateMod GUI - repository is being finalized                                                                    |StateMod model graphical user interface.|
+|[`cdss-app-statedmi-main`](https://github.com/OpenCDSS/cdss-app-statedmi-main)                                  |Main StateDMI application code.|
+|[`cdss-app-tstool-main`](https://github.com/OpenCDSS/cdss-app-tstool-main)                                      |Main TSTool application code.|
+|[`cdss-app-stateview-java`](https://github.com/OpenCDSS/cdss-app-stateview-java)                                |HydroBase database viewer.|
+|[`cdss-app-statemodgui-java`](https://github.com/OpenCDSS/cdss-app-statemodgui-java)                            |StateMod model graphical user interface.|
 
 ## Development Environment Folder Structure ##
 
@@ -125,7 +125,7 @@ as per normal OpenCDSS development protocols.
 Contents of the current master branch should be merged with the pull request to minimize
 code review that is necessary.
 
-See also the [OpenCDSS / protocols](http://learn.openwaterfoundation.org/cdss-website-opencdss/) for each software application.
+See also the [OpenCDSS / protocols](http://opencdss.state.co.us/) for each software application.
 
 ## License ##
 
@@ -133,4 +133,4 @@ The software is licensed under GPL v3+.  See the [LICENSE.md](LICENSE.md) file.
 
 ## Contact ##
 
-See the [OpenCDSS information](http://learn.openwaterfoundation.org/cdss-website-opencdss) for overall contacts and contacts for each software product.
+See the [OpenCDSS information](http://opencdss.state.co.us/) for overall contacts and contacts for each software product.
