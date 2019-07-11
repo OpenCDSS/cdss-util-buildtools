@@ -234,7 +234,7 @@
                         <productVersion>@{exeVersion}</productVersion>
                         <txtProductVersion>${product.version}</txtProductVersion>
                         <productName>${product.name}</productName>
-                        <companyName>Open Water Foundation</companyName>
+                        <companyName>OpenCDSS</companyName>
                         <internalName>${product.name}</internalName>
                         <originalFilename>@{exe}.exe</originalFilename>
                     </versionInfo>
