@@ -120,9 +120,11 @@
         </condition>
         -->
     	<!-- TODO SAM 2012-04-01 The license.dest should not be .cfg because that is used to configure software -->
+    	<!-- Disable this because it causes creation of a file like:  system/cdss-app-tstool-main.cfg that has the TSTool.cfg contents
         <property name="license.dest" value="${product.name}.cfg"/>
         <property name=".license.dest" value="${install.dir}/system/${license.dest}"/>
         <copy overwrite="true" failonerror="${fail.on.missing.license}" tofile="${.license.dest}" file="${license.file}"/>
+        -->
     </target>
     
     <target name="-standard-exe" if="java.main.class.isset" depends="-init-installer">
