@@ -10,22 +10,22 @@
 # - mainly care whether Cygwin
 getOperatingSystem()
 {
-	if [ ! -z "${operatingSystem}" ]
-	then
-		# Have already checked operating system so return
-		return
-	fi
-	operatingSystem="unknown"
-	case "$(uname)" in
-		CYGWIN*) operatingSystem="cygwin";;
-		MINGW*) operatingSystem="mingw";;
-	esac
-	echo "operatingSystem=$operatingSystem"
-	if [ ! "${operatingSystem}" = "mingw" ]
-	then
-		echo "This script is written to run in Git Bash (current shell is ${operatingSystem}).  Exiting."h
-		exit 1
-	fi
+  if [ ! -z "${operatingSystem}" ]
+  then
+    # Have already checked operating system so return
+    return
+  fi
+  operatingSystem="unknown"
+  case "$(uname)" in
+    CYGWIN*) operatingSystem="cygwin";;
+    MINGW*) operatingSystem="mingw";;
+  esac
+  echo "operatingSystem=${operatingSystem}"
+  if [ ! "${operatingSystem}" = "mingw" ]
+  then
+    echo "This script is written to run in Git Bash (current shell is ${operatingSystem}).  Exiting."h
+    exit 1
+  fi
 }
 
 # Main entry point into script
@@ -41,20 +41,32 @@ nsisInstallFolder='/c/Program Files (x86)/NSIS'
 # - no 3.03 in any files?
 # - therefore just print a message
 
-echo "You must run this script from a shell opened as Administrator.  Otherwise, errors will result."
-echo "Starting NSIS Windows client - check that it is version 3.03 and then exit..."
+echo ""
+echo "You must run this script from a shell opened as Administrator.  Otherwise, errors may result."
+echo "Starting NSIS Windows client - check that it is version 3.03 (or later) and then exit."
+echo ""
 sleep 2
 "${nsisInstallFolder}/NSIS.exe"
-read -p "Are you sure you want to install on top of NSIS 3.03 [y/n]? " answer
+echo ""
+echo "Kill this script with Ctrl-c if necessary and run as Administrator."
+echo ""
+read -p "Are you sure you want to install on top of NSIS 3.03 (or later) [y/n]? " answer
 
 if [ ! "${answer}" = "y" ]
 then
-	echo "Exiting"
-	exit 0
+  echo "Exiting"
+  exit 0
 fi
 
 # Copy the files from this repository to the NSIS 3.03 installation folder
 # - do a recursive copy on all archived files
+
+if [ ! -d "${nsisInstallFolder}" ]; then
+  echo ""
+  echo "NSIS installation folder does not exist:  ${nsisInstallFolder}"
+  echo "Exiting"
+  exit 1
+fi
 
 echo "Copying Contrib to ${nsisInstallFolder}/Contrib"
 cp -r Contrib/* "${nsisInstallFolder}/Contrib"

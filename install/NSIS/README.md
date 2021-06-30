@@ -4,6 +4,8 @@ This folder contains the necessary files for NSIS add-ons and for configuring th
 appropriate development environment for CDSS Java sofware
 including TSTool, StateDMI, StateView, and StateMod GUI.
 NSIS is necessary to build a windows installer for the above program.
+This script has been tested with NSIS 3.03 and 3.06 and should work OK with
+other versions of NSIS unless substantial NSIS changes occur.
 
 After downloading and installing [NSIS 3.03](https://sourceforge.net/projects/nsis/),
 the files/folders found in this directory should be copied into the corresponding
