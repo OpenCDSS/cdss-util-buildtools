@@ -118,12 +118,12 @@ This allows checking out a version of the library consistent with an application
 
 Contributions to this project can be submitted using the following options:
 
-1. Software developers with commit privileges can write to this repository
-as per normal OpenCDSS development protocols.
-2. Post an issue on GitHub with suggested change.  Provide information using the issue template.
-3. Fork the repository, make changes, and do a pull request.
-Contents of the current master branch should be merged with the pull request to minimize
-code review that is necessary.
+1.  Software developers with commit privileges can write to this repository
+    as per normal OpenCDSS development protocols.
+2.  Post an issue on GitHub with suggested change.  Provide information using the issue template.
+3.  Fork the repository, make changes, and do a pull request.
+    Contents of the current master branch should be merged with the pull request to minimize
+    code review that is necessary.
 
 See also the [OpenCDSS / protocols](http://opencdss.state.co.us/) for each software application.
 
