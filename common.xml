@@ -137,7 +137,10 @@
     	<property name="jre.170.name" value="jre_17" />
         <property name="jre.180.name" value="jre_18" />
         <!-- <property name="jre.base.dir" value="s:/DEVELOP/" description="The location to search for jres"/> -->
-    	<property name="jre.base.dir" value="C:/Program Files (x86)/Java/" description="The location to search for jres"/>
+    	<!-- The following worked on Windows 10 machine but why was it using a 32-bit compiler? -->
+    	<!-- Switch to 64-bit compiler for TSTool 14.4.0 -->
+    	<!-- <property name="jre.base.dir" value="C:/Program Files (x86)/Java/" description="The location to search for jres"/> -->
+    	<property name="jre.base.dir" value="C:/Program Files/Java/" description="The location to search for jres"/>
         <condition property="jre.src.dir" value="${jre.base.dir}/${jre.142.name}">
             <equals arg1="${java.src.version}" arg2="1.4"/> 
         </condition>
@@ -177,7 +180,10 @@
         <!-- defaults - if the above don't apply, these will -->
         <!-- Old default: <property name="jdk.base.dir" value="C:/DEVELOP/" description="The location to search for jdks"/> -->
     	<!-- Use a default that matches standard Oracle isntall default -->
-    	<property name="jdk.base.dir" value="C:/Program Files (x86)/Java" description="The location to search for jdks"/>
+    	<!-- The following worked on Windows 10 machine but why was it using a 32-bit compiler? -->
+    	<!-- Switch to 64-bit compiler for TSTool 14.4.0 -->
+    	<!-- <property name="jdk.base.dir" value="C:/Program Files (x86)/Java" description="The location to search for jdks"/> -->
+    	<property name="jdk.base.dir" value="C:/Program Files/Java" description="The location to search for jdks"/>
         <property name="java.142.name" value="jdk_142" />
         <property name="java.150.name" value="jdk_150" />
         <!-- Old default: <property name="java.160.name" value="jdk_16" /> -->

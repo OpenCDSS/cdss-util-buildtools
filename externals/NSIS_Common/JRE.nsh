@@ -10,12 +10,14 @@
   !define JRE_EXCLUDES "/x rmid.exe /x rmiregistry.exe /x tnameserv.exe /x keytool.exe /x kinit.exe /x klist.exe /x ktab.exe /x policytool.exe /x orbd.exe /x servertool.exe /x javaws* /x NPJ* /x JavaWebStart.dll /x jpi* /x deploy.jar /x plugin.jar"
 !endif
 
-# To prepare a jre for use
-# 1) remove the $JRE/bin/client/classes.jsa file (if present)
-# 2) execute "pack200 -J-Xmx256m $JRE/lib/rt.pack.gz $JRE/lib/rt.jar"
-# 3) remove $JRE/lib/rt.jar
-# if you are using a 1.4 jre you need to copy the unpack200.exe and dll from
-# a 1.5 jre into the $JRE/bin directory
+# To prepare a jre for use:
+#
+# 1. remove the $JRE/bin/client/classes.jsa file (if present)
+# 2. execute "pack200 -J-Xmx256m $JRE/lib/rt.pack.gz $JRE/lib/rt.jar"
+# 3. remove $JRE/lib/rt.jar
+#
+# If you are using a 1.4 jre you need to copy the unpack200.exe and dll from
+# a 1.5 jre into the $JRE/bin directory.
 
 Function unpack
     Var /GLOBAL JREDIR
@@ -33,15 +35,16 @@ Function unpack
     DetailPrint "Completed"
 FunctionEnd
 
-Section "Java™ Runtime Environment" JRE
+# The unicode value is for the TM (trademark) symbol.
+Section "Java${U+2122} Runtime Environment" JRE
     strcpy $choseJRE "1"
 
-    # set the cursor to hour glass so user knows the application is installing
+    # Set the cursor to hour glass so user knows the application is installing.
     SetCursor::System WAIT
 
-    # make sure only newer files are installed
+    # Make sure only newer files are installed.
     SetOverwrite ifnewer
-    # install JRE - if 142 include rt.jar, otherwise exclude it - we used a packed jar
+    # Install JRE - if 142 include rt.jar, otherwise exclude it - we used a packed jar.
     SetOutPath $INSTDIR
     !ifndef TEST
         !if ${JRE_VERSION} == "142"
@@ -63,7 +66,7 @@ Section "Java™ Runtime Environment" JRE
 
     Call unpack
     
-    # set the cursor back to normal
+    # Set the cursor back to normal.
     SetCursor::System NORMAL
     
 SectionEnd
