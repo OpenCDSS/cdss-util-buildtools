@@ -1,0 +1,4 @@
+# Ignore files in this folder except for this file:
+# - this is used for development, which for now is not occurring in this repository
+/*
+!.gitignore
