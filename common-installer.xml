@@ -38,6 +38,10 @@
         <condition property="java.min.version" value="1.8.0">
             <equals arg1="${java.target.version}" arg2="1.8"/>
         </condition>
+        <!-- As of Java 11 -->
+        <condition property="java.min.version" value="11">
+            <equals arg1="${java.target.version}" arg2="11"/>
+        </condition>
     </target>
     
     <target name="exe" description="generate an executable using launch4j" depends="-standard-exe"/>
@@ -243,8 +247,7 @@
                 </launch4jConfig>
             </echoxml>
             <property name="launch4j.dir" location="${rti.build.home}/lib/launch4j" />
-            <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
-    classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
+            <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
             <launch4j configFile="${dist.dir}/launch4j.xml"/>
             <move file="${dist.dir}/@{exe}.exe" todir="@{destDir}"/>
             <delete file="${dist.dir}/launch4j.xml"/>

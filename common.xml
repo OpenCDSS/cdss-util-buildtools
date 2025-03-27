@@ -58,8 +58,8 @@
         <property name="jdoc.dir" value="doc/javadoc" description="The name of a javadoc directory"/>
         <property name="nsis.dir" value="installer" description="The name of the nsis installer directory"/>
         <!-- <property name="nsis.exe" value="S:\DEVELOP\NSIS\makensis.exe" description="The full path to the NSIS exe"/> -->
-    	<!-- <property name="nsis.exe" value="C:\DEVELOP\NSIS\makensis.exe" description="The full path to the NSIS exe"/> -->
-    	<property name="nsis.exe" value="C:\Program Files (x86)\NSIS\makensis.exe" description="The full path to the NSIS exe"/>
+        <!-- <property name="nsis.exe" value="C:\DEVELOP\NSIS\makensis.exe" description="The full path to the NSIS exe"/> -->
+        <property name="nsis.exe" value="C:\Program Files (x86)\NSIS\makensis.exe" description="The full path to the NSIS exe"/>
         <property name="logs.dir" value="test/logs" />
         <property name="javac.debug" value="true" description="A flag to pass to javac for including debugging"/>
         <property name="jar.extra.includes" value="" description="A list of includes to use for adding to jars"/>
@@ -100,6 +100,7 @@
         <available property="rtibuild.present" file="${rti.build.home}/dist/rtibuild_1_0.jar"/>
         <fail unless="rtibuild.present" message="Please run the bootstrap target to build rtibuild ant extensions"/>
         <echo level="verbose">Disabled jars : ${product.disabled.jars}</echo>
+    	<echo message="  product.disabled.jars=${product.disabled.jars}"/>
         <collectjars useBuildDirs="true" excludes="${product.disabled.jars}"/>
         <property name="run.classpath.computed" value="${build.dir}:${build.classpath}:${collected.jar.deps}" description="The final computed classpath - do not change this"/>
         <path id="collected.deps.path"/>
@@ -121,26 +122,34 @@
         <condition property="rti.jre.version" value="150">
             <equals arg1="${java.src.version}" arg2="1.5"/> 
         </condition>
-        <condition property="rti.jre.version" value="16">
-            <equals arg1="${java.src.version}" arg2="1.6"/>
+        <!-- As of Java 11, use full integer versions rather than older 1.8, etc. -->
+        <!-- probably only use LTS Java versions and can remove some of these. -->
+        <condition property="rti.jre.version" value="11">
+            <equals arg1="${java.src.version}" arg2="11"/>
         </condition>
         <condition property="rti.jre.version" value="17">
-            <equals arg1="${java.src.version}" arg2="1.7"/>
+            <!-- For early Java the following was used but switch to new convention as of Java 11. -->
+            <!-- equals arg1="${java.src.version}" arg2="1.7"/ -->
+            <equals arg1="${java.src.version}" arg2="17"/>
         </condition>
         <condition property="rti.jre.version" value="18">
-            <equals arg1="${java.src.version}" arg2="1.8"/>
+            <!-- For early Java the following was used but switch to new convention as of Java 11. -->
+            <!-- equals arg1="${java.src.version}" arg2="1.8"/ -->
+            <equals arg1="${java.src.version}" arg2="18"/>
         </condition>
         <!-- defaults, if the above rules haven't set the jres, these will -->
         <property name="jre.142.name" value="jre_142" />
         <property name="jre.150.name" value="jre_150" />
         <property name="jre.160.name" value="jre_16" />
-    	<property name="jre.170.name" value="jre_17" />
+        <property name="jre.170.name" value="jre_17" />
         <property name="jre.180.name" value="jre_18" />
+        <!-- As of Java 11 -->
+        <property name="jre.11.name" value="jre_11" />
         <!-- <property name="jre.base.dir" value="s:/DEVELOP/" description="The location to search for jres"/> -->
-    	<!-- The following worked on Windows 10 machine but why was it using a 32-bit compiler? -->
-    	<!-- Switch to 64-bit compiler for TSTool 14.4.0 -->
-    	<!-- <property name="jre.base.dir" value="C:/Program Files (x86)/Java/" description="The location to search for jres"/> -->
-    	<property name="jre.base.dir" value="C:/Program Files/Java/" description="The location to search for jres"/>
+       	<!-- The following worked on Windows 10 machine but why was it using a 32-bit compiler? -->
+        <!-- Switch to 64-bit compiler for TSTool 14.4.0 -->
+        <!-- <property name="jre.base.dir" value="C:/Program Files (x86)/Java/" description="The location to search for jres"/> -->
+        <property name="jre.base.dir" value="C:/Program Files/Java/" description="The location to search for jres"/>
         <condition property="jre.src.dir" value="${jre.base.dir}/${jre.142.name}">
             <equals arg1="${java.src.version}" arg2="1.4"/> 
         </condition>
@@ -155,6 +164,10 @@
         </condition>
         <condition property="jre.src.dir" value="${jre.base.dir}/${jre.180.name}">
             <equals arg1="${java.src.version}" arg2="1.8"/>
+        </condition>
+        <!-- Use the following as of Java 11 -->
+        <condition property="jre.src.dir" value="${jre.base.dir}/${jre.11.name}">
+            <equals arg1="${java.src.version}" arg2="11"/>
         </condition>
     </target>
     
@@ -177,20 +190,27 @@
         <condition property="java.180.name" value="jdk1.8">
             <os family="unix"/>
         </condition>
+        <!-- Use the following as of Java 11. -->
+        <condition property="java.11.name" value="jdk11">
+            <os family="unix"/>
+        </condition>
         <!-- defaults - if the above don't apply, these will -->
         <!-- Old default: <property name="jdk.base.dir" value="C:/DEVELOP/" description="The location to search for jdks"/> -->
-    	<!-- Use a default that matches standard Oracle isntall default -->
-    	<!-- The following worked on Windows 10 machine but why was it using a 32-bit compiler? -->
-    	<!-- Switch to 64-bit compiler for TSTool 14.4.0 -->
-    	<!-- <property name="jdk.base.dir" value="C:/Program Files (x86)/Java" description="The location to search for jdks"/> -->
-    	<property name="jdk.base.dir" value="C:/Program Files/Java" description="The location to search for jdks"/>
+        <!-- Use a default that matches standard Oracle isntall default -->
+        <!-- The following worked on Windows 10 machine but why was it using a 32-bit compiler? -->
+        <!-- Switch to 64-bit compiler for TSTool 14.4.0 -->
+        <!-- <property name="jdk.base.dir" value="C:/Program Files (x86)/Java" description="The location to search for jdks"/> -->
+        <property name="jdk.base.dir" value="C:/Program Files/Java" description="The location to search for jdks"/>
         <property name="java.142.name" value="jdk_142" />
         <property name="java.150.name" value="jdk_150" />
         <!-- Old default: <property name="java.160.name" value="jdk_16" /> -->
-    	<!-- New default matches standard Oracle JDK install -->
-    	<property name="java.160.name" value="jdk6" />
-    	<property name="java.170.name" value="jdk7" />
-    	<property name="java.180.name" value="jdk8" />
+        <!-- New default matches standard Oracle JDK install -->
+        <property name="java.160.name" value="jdk6" />
+        <property name="java.170.name" value="jdk7" />
+        <property name="java.180.name" value="jdk8" />
+        <!-- As of Java 11. -->
+        <property name="java.11.name" value="jdk11" />
+    	<echo message="  java.11.name=${java.11.name}"/>
     </target>
     
     <target name="-init-javac" depends="-init-jdk">
@@ -209,7 +229,12 @@
         <condition property="jdk.build.home" value="${jdk.base.dir}/${java.180.name}">
             <equals arg1="${java.src.version}" arg2="1.8" />
         </condition>
+        <!-- As of Java 11 -->
+        <condition property="jdk.build.home" value="${jdk.base.dir}/${java.11.name}">
+            <equals arg1="${java.src.version}" arg2="11" />
+        </condition>
         <property name="javac.exe" value="${jdk.build.home}/bin/javac" description="The javac executable to use when forking"/>
+    	<echo message="  java.src.version=${java.src.version}"/>
     </target>
     
     <target name="-init-java" depends="-init-jdk">
@@ -229,7 +254,12 @@
         <condition property="jdk.run.home" value="${jdk.base.dir}/${java.180.name}">
             <equals arg1="${java.run.version}" arg2="1.8" />
         </condition>
+        <!-- As of Java 11 -->
+        <condition property="jdk.run.home" value="${jdk.base.dir}/${java.11.name}">
+            <equals arg1="${java.run.version}" arg2="11" />
+        </condition>
         <property name="java.exe" value="${jdk.run.home}/bin/java" description="The java executable to use when executing"/>
+    	<echo message="  java.run.version=${java.run.version}"/>
     </target>
     
     <target name="-enable-emma" depends="-init-build">
