@@ -1,5 +1,9 @@
+# Default Java version
 !ifndef JRE_VERSION
-  !define JRE_VERSION 142
+  # Old default
+  #!define JRE_VERSION 142
+  # Use for TSTool 15.0.0
+  !define JRE_VERSION 11
 !endif
 
 !ifndef JRE_SRC_DIR
@@ -10,6 +14,7 @@
   !define JRE_EXCLUDES "/x rmid.exe /x rmiregistry.exe /x tnameserv.exe /x keytool.exe /x kinit.exe /x klist.exe /x ktab.exe /x policytool.exe /x orbd.exe /x servertool.exe /x javaws* /x NPJ* /x JavaWebStart.dll /x jpi* /x deploy.jar /x plugin.jar"
 !endif
 
+# This was done for Java 8 but is no longer needed.
 # To prepare a jre for use:
 #
 # 1. remove the $JRE/bin/client/classes.jsa file (if present)
@@ -49,7 +54,10 @@ Section "Java${U+2122} Runtime Environment" JRE
     !ifndef TEST
         !if ${JRE_VERSION} == "142"
             File /r /x *svn* "${JRE_SRC_DIR}\jre_${JRE_VERSION}"
-        !else
+        !endif
+        !if ${JRE_VERSION} == "8"
+            # This is old and should not be used after Java 8:
+            # - not sure if 8 is correct or should be 1.8, etc. but no longer used
             File /r /x rt.jar /x classes.jsa ${JRE_EXCLUDES} "${JRE_SRC_DIR}\jre_${JRE_VERSION}"
             # ugliness - if the jre doesn't contain a packed rt.jar, then we need to include
             # the original rt.jar - unpack will silently fail so this is OK.
@@ -59,6 +67,11 @@ Section "Java${U+2122} Runtime Environment" JRE
                 SetOutPath "$INSTDIR\jre_${JRE_VERSION}\lib"
                 File "${JRE_SRC_DIR}\jre_${JRE_VERSION}\lib\rt.jar"
             !endif
+        !else
+            # New versions after Java 8:
+            # -  don't have rt.jar
+            # - don't need to do anything
+            File /r "${JRE_SRC_DIR}\jre_${JRE_VERSION}"
         !endif
     !else
         File /r /x *.jar /x *.dll /x *zi* "${JRE_SRC_DIR}\jre_${JRE_VERSION}"
